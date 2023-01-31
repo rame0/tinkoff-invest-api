@@ -1,4 +1,5 @@
 # tinkoff-invest-api
+
 Node.js SDK для работы с [Tinkoff Invest API](https://tinkoff.github.io/investAPI/).
 
 <!-- toc -->
@@ -17,14 +18,17 @@ Node.js SDK для работы с [Tinkoff Invest API](https://tinkoff.github.i
 <!-- tocstop -->
 
 ## Установка
+
 ```
-npm i tinkoff-invest-api
+npm i https://github.com/psqq/tinkoff-invest-api.git
 ```
 
 ## Использование
+
 ### Подключение
+
 ```ts
-import { TinkoffInvestApi } from 'tinkoff-invest-api';
+import { TinkoffInvestApi } from "@psqq/tinkoff-invest-api/dist/index";
 
 // создать клиента с заданным токеном доступа
 const api = new TinkoffInvestApi({ token: '<your-token>' });
@@ -32,6 +36,7 @@ const api = new TinkoffInvestApi({ token: '<your-token>' });
 Как получить токен доступа описано [тут](https://tinkoff.github.io/investAPI/token/).
 
 ### Unary-запросы
+
 ```ts
 // получить список счетов
 const { accounts } = await api.users.getAccounts({});
@@ -48,7 +53,9 @@ const { candles } = await api.marketdata.getCandles({
 ```
 
 ### Стримы
+
 Для работы со стримом сделана обертка `api.stream`:
+
 ```ts
 // подписка на свечи
 const unsubscribe = await api.stream.market.candles({
@@ -83,6 +90,7 @@ await api.stream.market.cancel();
 * `.info(request, handler)`
 
 ### Универсальный счет
+
 Для бесшовной работы со счетами в бою и песочнице сделан универсальный интерфейс `TinkoffAccount`.
 
 ```ts
@@ -114,7 +122,9 @@ const order = await account.postOrder({
 Все методы универсального счета можно посмотреть [тут](https://github.com/vitalets/tinkoff-invest-api/blob/main/src/account/real.ts).
 
 ### Кеширование свечей
+
 Кеширование свечей позволяет сократить кол-во запросов к API, а также удобно получать нужное кол-во свечей за любой период времени (в исходном API есть ограничения на диапазоны дат запроса). Для загрузки свечей с учетом кеша используется класс `CandlesLoader`:
+
 ```ts
 import { TinkoffInvestApi, CandlesLoader } from 'tinkoff-invest-api';
 
@@ -158,7 +168,9 @@ const { candles } = await candlesLoader.getCandles({
 </details>
 
 ### Хелперы
+
 Для более удобной работы есть несколько хелперов:
+
 ```ts
 import { Helpers } from 'tinkoff-invest-api';
 
@@ -201,6 +213,7 @@ Helpers.toHuman<T extends Enums>(value: T, values: getEnumType<T>): string;
 ```
 
 ## Отладка
+
 Для отладки используется модуль [debug](https://github.com/debug-js/debug).
 Чтобы вывести отладочную информацию, нужно указать переменную окружения `DEBUG`:
 
@@ -209,4 +222,5 @@ DEBUG=tinkoff-invest-api:* node robot.js
 ```
 
 ## Лицензия
+
 MIT @ [Vitaliy Potapov](https://github.com/vitalets)
