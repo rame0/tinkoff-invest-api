@@ -8,7 +8,6 @@ npm-debug.log
 # env
 .env*
 
-/cjs
 .cache
 /todo.txt
 /scripts/check.ts
