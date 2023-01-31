@@ -28,7 +28,7 @@ npm i https://github.com/psqq/tinkoff-invest-api.git
 ### Подключение
 
 ```ts
-import { TinkoffInvestApi } from "@psqq/tinkoff-invest-api/dist/index";
+import { TinkoffInvestApi } from "@psqq/tinkoff-invest-api/cjs/index";
 
 // создать клиента с заданным токеном доступа
 const api = new TinkoffInvestApi({ token: '<your-token>' });
