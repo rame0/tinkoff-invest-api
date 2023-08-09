@@ -58,6 +58,8 @@ export enum OrderType {
   ORDER_TYPE_LIMIT = 1,
   /** ORDER_TYPE_MARKET - Рыночная */
   ORDER_TYPE_MARKET = 2,
+  /** ORDER_TYPE_BESTPRICE - Лучшая цена */
+  ORDER_TYPE_BESTPRICE = 3,
   UNRECOGNIZED = -1,
 }
 
@@ -72,6 +74,9 @@ export function orderTypeFromJSON(object: any): OrderType {
     case 2:
     case "ORDER_TYPE_MARKET":
       return OrderType.ORDER_TYPE_MARKET;
+    case 3:
+    case "ORDER_TYPE_BESTPRICE":
+      return OrderType.ORDER_TYPE_BESTPRICE;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -87,6 +92,8 @@ export function orderTypeToJSON(object: OrderType): string {
       return "ORDER_TYPE_LIMIT";
     case OrderType.ORDER_TYPE_MARKET:
       return "ORDER_TYPE_MARKET";
+    case OrderType.ORDER_TYPE_BESTPRICE:
+      return "ORDER_TYPE_BESTPRICE";
     case OrderType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -249,7 +256,11 @@ export interface OrderTrade {
 
 /** Запрос выставления торгового поручения. */
 export interface PostOrderRequest {
-  /** Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id. */
+  /**
+   * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+   *
+   * @deprecated
+   */
   figi: string;
   /** Количество лотов. */
   quantity: number;
@@ -261,7 +272,7 @@ export interface PostOrderRequest {
   accountId: string;
   /** Тип заявки. */
   orderType: OrderType;
-  /** Идентификатор запроса выставления поручения для целей идемпотентности. Максимальная длина 36 символов. */
+  /** Идентификатор запроса выставления поручения для целей идемпотентности в формате UID. Максимальная длина 36 символов. */
   orderId: string;
   /** Идентификатор инструмента, принимает значения Figi или Instrument_uid. */
   instrumentId: string;
@@ -269,7 +280,7 @@ export interface PostOrderRequest {
 
 /** Информация о выставлении поручения. */
 export interface PostOrderResponse {
-  /** Идентификатор заявки. */
+  /** Биржевой идентификатор заявки. */
   orderId: string;
   /** Текущий статус заявки. */
   executionReportStatus: OrderExecutionReportStatus;
@@ -279,7 +290,7 @@ export interface PostOrderResponse {
   lotsExecuted: number;
   /** Начальная цена заявки. Произведение количества запрошенных лотов на цену. */
   initialOrderPrice?: MoneyValue;
-  /** Исполненная средняя цена 1 одного инструмента в заявки. */
+  /** Исполненная средняя цена одного инструмента в заявке. */
   executedOrderPrice?: MoneyValue;
   /** Итоговая стоимость заявки, включающая все комиссии. */
   totalOrderAmount?: MoneyValue;
@@ -341,7 +352,7 @@ export interface GetOrdersResponse {
 
 /** Информация о торговом поручении. */
 export interface OrderState {
-  /** Идентификатор заявки. */
+  /** Биржевой идентификатор заявки. */
   orderId: string;
   /** Текущий статус заявки. */
   executionReportStatus: OrderExecutionReportStatus;
@@ -379,6 +390,8 @@ export interface OrderState {
   orderDate?: Date;
   /** UID идентификатор инструмента. */
   instrumentUid: string;
+  /** Идентификатор ключа идемпотентности, переданный клиентом, в формате UID. Максимальная длина 36 символов. */
+  orderRequestId: string;
 }
 
 /** Сделки в рамках торгового поручения. */
@@ -1425,6 +1438,7 @@ function createBaseOrderState(): OrderState {
     orderType: 0,
     orderDate: undefined,
     instrumentUid: "",
+    orderRequestId: "",
   };
 }
 
@@ -1517,6 +1531,9 @@ export const OrderState = {
     if (message.instrumentUid !== "") {
       writer.uint32(154).string(message.instrumentUid);
     }
+    if (message.orderRequestId !== "") {
+      writer.uint32(162).string(message.orderRequestId);
+    }
     return writer;
   },
 
@@ -1607,6 +1624,9 @@ export const OrderState = {
         case 19:
           message.instrumentUid = reader.string();
           break;
+        case 20:
+          message.orderRequestId = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1667,6 +1687,9 @@ export const OrderState = {
         : undefined,
       instrumentUid: isSet(object.instrumentUid)
         ? String(object.instrumentUid)
+        : "",
+      orderRequestId: isSet(object.orderRequestId)
+        ? String(object.orderRequestId)
         : "",
     };
   },
@@ -1731,6 +1754,8 @@ export const OrderState = {
       (obj.orderDate = message.orderDate.toISOString());
     message.instrumentUid !== undefined &&
       (obj.instrumentUid = message.instrumentUid);
+    message.orderRequestId !== undefined &&
+      (obj.orderRequestId = message.orderRequestId);
     return obj;
   },
 };

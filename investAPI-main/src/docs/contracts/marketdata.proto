@@ -104,7 +104,7 @@ enum SubscriptionInterval {
 
 //Запрос изменения статус подписки на свечи.
 message CandleInstrument {
-  string figi = 1; // Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+  string figi = 1 [ deprecated = true ]; // Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
   SubscriptionInterval interval = 2; //Интервал свечей.
   string instrument_id = 3; //Идентификатор инструмента, принимает значение figi или instrument_uid
 }
@@ -134,6 +134,7 @@ enum SubscriptionStatus {
   SUBSCRIPTION_STATUS_LIMIT_IS_EXCEEDED = 6; //Превышен лимит на общее количество подписок в рамках стрима, подробнее: [Лимитная политика](https://tinkoff.github.io/investAPI/limits/).
   SUBSCRIPTION_STATUS_INTERNAL_ERROR = 7; //Внутренняя ошибка сервиса.
   SUBSCRIPTION_STATUS_TOO_MANY_REQUESTS = 8; //Превышен лимит на количество запросов на подписки в течение установленного отрезка времени
+  SUBSCRIPTION_STATUS_SUBSCRIPTION_NOT_FOUND = 9; // Активная подписка не найдена. Ошибка может возникнуть только при отписке от не существующей отписки
 }
 
 //Запрос на изменение статуса подписки на стаканы.
@@ -144,7 +145,7 @@ message SubscribeOrderBookRequest {
 
 //Запрос подписки на стаканы.
 message OrderBookInstrument {
-  string figi = 1; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+  string figi = 1 [ deprecated = true ]; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
   int32 depth = 2; //Глубина стакана.
   string instrument_id = 3; //Идентификатор инструмента, принимает значение figi или instrument_uid
 }
@@ -171,7 +172,7 @@ message SubscribeTradesRequest {
 
 //Запрос подписки на поток обезличенных сделок.
 message TradeInstrument {
-  string figi = 1; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+  string figi = 1 [ deprecated = true ]; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
   string instrument_id = 2; //Идентификатор инструмента, принимает значение figi или instrument_uid
 }
 
@@ -196,7 +197,7 @@ message SubscribeInfoRequest {
 
 //Запрос подписки на торговый статус.
 message InfoInstrument {
-  string figi = 1; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+  string figi = 1 [ deprecated = true ]; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
   string instrument_id = 2; //Идентификатор инструмента, принимает значение figi или instrument_uid
 }
 
@@ -221,7 +222,7 @@ message SubscribeLastPriceRequest {
 
 //Запрос подписки на последнюю цену.
 message LastPriceInstrument {
-  string figi = 1; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+  string figi = 1 [ deprecated = true ]; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
   string instrument_id = 2; //Идентификатор инструмента, принимает значение figi или instrument_uid
 }
 
@@ -300,7 +301,7 @@ message TradingStatus {
 
 //Запрос исторических свечей.
 message GetCandlesRequest {
-  string figi = 1; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+  string figi = 1 [ deprecated = true ]; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
   google.protobuf.Timestamp from = 2; //Начало запрашиваемого периода в часовом поясе UTC.
   google.protobuf.Timestamp to = 3; //Окончание запрашиваемого периода в часовом поясе UTC.
   CandleInterval interval = 4; //Интервал запрошенных свечей.
@@ -310,11 +311,19 @@ message GetCandlesRequest {
 //Интервал свечей.
 enum CandleInterval {
   CANDLE_INTERVAL_UNSPECIFIED = 0; //Интервал не определён.
-  CANDLE_INTERVAL_1_MIN = 1; //1 минута.
-  CANDLE_INTERVAL_5_MIN = 2; //5 минут.
-  CANDLE_INTERVAL_15_MIN = 3; //15 минут.
-  CANDLE_INTERVAL_HOUR = 4; //1 час.
-  CANDLE_INTERVAL_DAY = 5; //1 день.
+  CANDLE_INTERVAL_1_MIN = 1; //от 1 минуты до 1 дня.
+  CANDLE_INTERVAL_5_MIN = 2; //от 5 минут до 1 дня.
+  CANDLE_INTERVAL_15_MIN = 3; //от 15 минут до 1 дня.
+  CANDLE_INTERVAL_HOUR = 4; //от 1 часа до 1 недели.
+  CANDLE_INTERVAL_DAY = 5; //от 1 дня до 1 года.
+  CANDLE_INTERVAL_2_MIN = 6; //от 2 минут до 1 дня.
+  CANDLE_INTERVAL_3_MIN = 7; //от 3 минут до 1 дня.
+  CANDLE_INTERVAL_10_MIN = 8; //от 10 минут до 1 дня.
+  CANDLE_INTERVAL_30_MIN = 9; //от 30 минут до 2 дней.
+  CANDLE_INTERVAL_2_HOUR = 10; //от 2 часов до 1 месяца.
+  CANDLE_INTERVAL_4_HOUR = 11; //от 4 часов до 1 месяца.
+  CANDLE_INTERVAL_WEEK = 12; //от 1 недели до 2 лет.
+  CANDLE_INTERVAL_MONTH = 13; //от 1 месяца до 10 лет.
 }
 
 //Список свечей.
@@ -335,7 +344,7 @@ message HistoricCandle {
 
 //Запрос получения цен последних сделок.
 message GetLastPricesRequest {
-  repeated string figi = 1; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+  repeated string figi = 1 [ deprecated = true ]; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
   repeated string instrument_id = 2; //Массив идентификаторов инструмента, принимает значения figi или instrument_uid.
 }
 
@@ -354,7 +363,7 @@ message LastPrice {
 
 //Запрос стакана.
 message GetOrderBookRequest {
-  string figi = 1; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+  string figi = 1 [ deprecated = true ]; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
   int32 depth = 2; //Глубина стакана.
   string instrument_id = 3; //Идентификатор инструмента, принимает значение figi или instrument_uid.
 }
@@ -377,7 +386,7 @@ message GetOrderBookResponse {
 
 //Запрос получения торгового статуса.
 message GetTradingStatusRequest {
-  string figi = 1; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+  string figi = 1 [ deprecated = true ]; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
   string instrument_id = 2; //Идентификатор инструмента, принимает значение figi или instrument_uid.
 }
 
@@ -403,7 +412,7 @@ message GetTradingStatusResponse {
 
 //Запрос обезличенных сделок за последний час.
 message GetLastTradesRequest {
-  string figi = 1; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+  string figi = 1 [ deprecated = true ]; //Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
   google.protobuf.Timestamp from = 2; //Начало запрашиваемого периода в часовом поясе UTC.
   google.protobuf.Timestamp to = 3; //Окончание запрашиваемого периода в часовом поясе UTC.
   string instrument_id = 4; //Идентификатор инструмента, принимает значение figi или instrument_uid.

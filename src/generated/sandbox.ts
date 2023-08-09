@@ -422,7 +422,7 @@ export const SandboxServiceDefinition = {
       responseStream: false,
       options: {},
     },
-    /** Метод получения статуса заявки в песочнице. */
+    /** Метод получения статуса заявки в песочнице. Заявки хранятся в таблице 7 дней. */
     getSandboxOrderState: {
       name: "GetSandboxOrderState",
       requestType: GetOrderStateRequest,
@@ -524,7 +524,7 @@ export interface SandboxServiceServiceImplementation<CallContextExt = {}> {
     request: CancelOrderRequest,
     context: CallContext & CallContextExt
   ): Promise<CancelOrderResponse>;
-  /** Метод получения статуса заявки в песочнице. */
+  /** Метод получения статуса заявки в песочнице. Заявки хранятся в таблице 7 дней. */
   getSandboxOrderState(
     request: GetOrderStateRequest,
     context: CallContext & CallContextExt
@@ -597,7 +597,7 @@ export interface SandboxServiceClient<CallOptionsExt = {}> {
     request: CancelOrderRequest,
     options?: CallOptions & CallOptionsExt
   ): Promise<CancelOrderResponse>;
-  /** Метод получения статуса заявки в песочнице. */
+  /** Метод получения статуса заявки в песочнице. Заявки хранятся в таблице 7 дней. */
   getSandboxOrderState(
     request: GetOrderStateRequest,
     options?: CallOptions & CallOptionsExt

@@ -78,6 +78,8 @@ message Operation {
   OperationType operation_type = 13; //Тип операции.
   repeated OperationTrade trades = 14; //Массив сделок.
   string asset_uid = 16;	//Идентификатор актива
+  string position_uid	= 17; //position_uid-идентификатора инструмента.
+  string instrument_uid	= 18; //Уникальный идентификатор инструмента.
 }
 
 //Сделка по операции.
@@ -151,10 +153,10 @@ message PortfolioPosition {
   MoneyValue average_position_price = 4; //Средневзвешенная цена позиции. **Возможна задержка до секунды для пересчёта**.
   Quotation expected_yield = 5; //Текущая рассчитанная доходность позиции.
   MoneyValue current_nkd = 6; // Текущий НКД.
-  Quotation average_position_price_pt = 7; // Deprecated Средняя цена позиции в пунктах (для фьючерсов). **Возможна задержка до секунды для пересчёта**.
+  Quotation average_position_price_pt = 7 [ deprecated = true ]; // Deprecated Средняя цена позиции в пунктах (для фьючерсов). **Возможна задержка до секунды для пересчёта**.
   MoneyValue current_price = 8; //Текущая цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента.
   MoneyValue average_position_price_fifo = 9; //Средняя цена позиции по методу FIFO. **Возможна задержка до секунды для пересчёта**.
-  Quotation quantity_lots = 10; //Deprecated Количество лотов в портфеле.
+  Quotation quantity_lots = 10 [ deprecated = true ]; //Deprecated Количество лотов в портфеле.
   bool blocked = 21; //Заблокировано на бирже.
   Quotation blocked_lots = 22; //Количество бумаг, заблокированных выставленными заявками.
   string position_uid = 24; //position_uid-идентификатора инструмента
@@ -470,6 +472,7 @@ message OperationItem {
   string figi = 32; //Figi.
   string instrument_type = 33; //Тип инструмента.
   InstrumentType instrument_kind	= 34; //Тип инструмента.
+  string position_uid	= 35; //position_uid-идентификатора инструмента.
   MoneyValue payment = 41; //Сумма операции.
   MoneyValue price = 42; //Цена операции за 1 инструмент.
   MoneyValue commission = 43; //Комиссия.

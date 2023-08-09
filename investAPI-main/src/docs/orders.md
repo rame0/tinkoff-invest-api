@@ -140,7 +140,7 @@ Stream сделок пользователя
 | direction |  [OrderDirection](#orderdirection) | Направление операции. |
 | account_id |  [string](#string) | Номер счёта. |
 | order_type |  [OrderType](#ordertype) | Тип заявки. |
-| order_id |  [string](#string) | Идентификатор запроса выставления поручения для целей идемпотентности. Максимальная длина 36 символов. |
+| order_id |  [string](#string) | Идентификатор запроса выставления поручения для целей идемпотентности в формате UID. Максимальная длина 36 символов. |
 | instrument_id |  [string](#string) | Идентификатор инструмента, принимает значения Figi или Instrument_uid. |
  <!-- end Fields -->
  <!-- end HasFields -->
@@ -152,12 +152,12 @@ Stream сделок пользователя
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| order_id |  [string](#string) | Идентификатор заявки. |
+| order_id |  [string](#string) | Биржевой идентификатор заявки. |
 | execution_report_status |  [OrderExecutionReportStatus](#orderexecutionreportstatus) | Текущий статус заявки. |
 | lots_requested |  [int64](#int64) | Запрошено лотов. |
 | lots_executed |  [int64](#int64) | Исполнено лотов. |
 | initial_order_price |  [MoneyValue](#moneyvalue) | Начальная цена заявки. Произведение количества запрошенных лотов на цену. |
-| executed_order_price |  [MoneyValue](#moneyvalue) | Исполненная средняя цена 1 одного инструмента в заявки. |
+| executed_order_price |  [MoneyValue](#moneyvalue) | Исполненная средняя цена одного инструмента в заявке. |
 | total_order_amount |  [MoneyValue](#moneyvalue) | Итоговая стоимость заявки, включающая все комиссии. |
 | initial_commission |  [MoneyValue](#moneyvalue) | Начальная комиссия. Комиссия рассчитанная при выставлении заявки. |
 | executed_commission |  [MoneyValue](#moneyvalue) | Фактическая комиссия по итогам исполнения заявки. |
@@ -236,7 +236,7 @@ Stream сделок пользователя
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| order_id |  [string](#string) | Идентификатор заявки. |
+| order_id |  [string](#string) | Биржевой идентификатор заявки. |
 | execution_report_status |  [OrderExecutionReportStatus](#orderexecutionreportstatus) | Текущий статус заявки. |
 | lots_requested |  [int64](#int64) | Запрошено лотов. |
 | lots_executed |  [int64](#int64) | Исполнено лотов. |
@@ -255,6 +255,7 @@ Stream сделок пользователя
 | order_type |  [OrderType](#ordertype) | Тип заявки. |
 | order_date |  [google.protobuf.Timestamp](#googleprotobuftimestamp) | Дата и время выставления заявки в часовом поясе UTC. |
 | instrument_uid |  [string](#string) | UID идентификатор инструмента. |
+| order_request_id |  [string](#string) | Идентификатор ключа идемпотентности, переданный клиентом, в формате UID. Максимальная длина 36 символов. |
  <!-- end Fields -->
  <!-- end HasFields -->
 
@@ -311,6 +312,7 @@ Stream сделок пользователя
 | ORDER_TYPE_UNSPECIFIED | 0 | Значение не указано |
 | ORDER_TYPE_LIMIT | 1 | Лимитная |
 | ORDER_TYPE_MARKET | 2 | Рыночная |
+| ORDER_TYPE_BESTPRICE | 3 | Лучшая цена |
 
 
 

@@ -680,6 +680,10 @@ export interface Operation {
   trades: OperationTrade[];
   /** Идентификатор актива */
   assetUid: string;
+  /** position_uid-идентификатора инструмента. */
+  positionUid: string;
+  /** Уникальный идентификатор инструмента. */
+  instrumentUid: string;
 }
 
 /** Сделка по операции. */
@@ -828,13 +832,21 @@ export interface PortfolioPosition {
   expectedYield?: Quotation;
   /** Текущий НКД. */
   currentNkd?: MoneyValue;
-  /** Deprecated Средняя цена позиции в пунктах (для фьючерсов). **Возможна задержка до секунды для пересчёта**. */
+  /**
+   * Deprecated Средняя цена позиции в пунктах (для фьючерсов). **Возможна задержка до секунды для пересчёта**.
+   *
+   * @deprecated
+   */
   averagePositionPricePt?: Quotation;
   /** Текущая цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. */
   currentPrice?: MoneyValue;
   /** Средняя цена позиции по методу FIFO. **Возможна задержка до секунды для пересчёта**. */
   averagePositionPriceFifo?: MoneyValue;
-  /** Deprecated Количество лотов в портфеле. */
+  /**
+   * Deprecated Количество лотов в портфеле.
+   *
+   * @deprecated
+   */
   quantityLots?: Quotation;
   /** Заблокировано на бирже. */
   blocked: boolean;
@@ -1193,6 +1205,8 @@ export interface OperationItem {
   instrumentType: string;
   /** Тип инструмента. */
   instrumentKind: InstrumentType;
+  /** position_uid-идентификатора инструмента. */
+  positionUid: string;
   /** Сумма операции. */
   payment?: MoneyValue;
   /** Цена операции за 1 инструмент. */
@@ -1454,6 +1468,8 @@ function createBaseOperation(): Operation {
     operationType: 0,
     trades: [],
     assetUid: "",
+    positionUid: "",
+    instrumentUid: "",
   };
 }
 
@@ -1509,6 +1525,12 @@ export const Operation = {
     }
     if (message.assetUid !== "") {
       writer.uint32(130).string(message.assetUid);
+    }
+    if (message.positionUid !== "") {
+      writer.uint32(138).string(message.positionUid);
+    }
+    if (message.instrumentUid !== "") {
+      writer.uint32(146).string(message.instrumentUid);
     }
     return writer;
   },
@@ -1567,6 +1589,12 @@ export const Operation = {
         case 16:
           message.assetUid = reader.string();
           break;
+        case 17:
+          message.positionUid = reader.string();
+          break;
+        case 18:
+          message.instrumentUid = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1606,6 +1634,10 @@ export const Operation = {
         ? object.trades.map((e: any) => OperationTrade.fromJSON(e))
         : [],
       assetUid: isSet(object.assetUid) ? String(object.assetUid) : "",
+      positionUid: isSet(object.positionUid) ? String(object.positionUid) : "",
+      instrumentUid: isSet(object.instrumentUid)
+        ? String(object.instrumentUid)
+        : "",
     };
   },
 
@@ -1644,6 +1676,10 @@ export const Operation = {
       obj.trades = [];
     }
     message.assetUid !== undefined && (obj.assetUid = message.assetUid);
+    message.positionUid !== undefined &&
+      (obj.positionUid = message.positionUid);
+    message.instrumentUid !== undefined &&
+      (obj.instrumentUid = message.instrumentUid);
     return obj;
   },
 };
@@ -5146,6 +5182,7 @@ function createBaseOperationItem(): OperationItem {
     figi: "",
     instrumentType: "",
     instrumentKind: 0,
+    positionUid: "",
     payment: undefined,
     price: undefined,
     commission: undefined,
@@ -5208,6 +5245,9 @@ export const OperationItem = {
     }
     if (message.instrumentKind !== 0) {
       writer.uint32(272).int32(message.instrumentKind);
+    }
+    if (message.positionUid !== "") {
+      writer.uint32(282).string(message.positionUid);
     }
     if (message.payment !== undefined) {
       MoneyValue.encode(message.payment, writer.uint32(330).fork()).ldelim();
@@ -5308,6 +5348,9 @@ export const OperationItem = {
         case 34:
           message.instrumentKind = reader.int32() as any;
           break;
+        case 35:
+          message.positionUid = reader.string();
+          break;
         case 41:
           message.payment = MoneyValue.decode(reader, reader.uint32());
           break;
@@ -5385,6 +5428,7 @@ export const OperationItem = {
       instrumentKind: isSet(object.instrumentKind)
         ? instrumentTypeFromJSON(object.instrumentKind)
         : 0,
+      positionUid: isSet(object.positionUid) ? String(object.positionUid) : "",
       payment: isSet(object.payment)
         ? MoneyValue.fromJSON(object.payment)
         : undefined,
@@ -5446,6 +5490,8 @@ export const OperationItem = {
       (obj.instrumentType = message.instrumentType);
     message.instrumentKind !== undefined &&
       (obj.instrumentKind = instrumentTypeToJSON(message.instrumentKind));
+    message.positionUid !== undefined &&
+      (obj.positionUid = message.positionUid);
     message.payment !== undefined &&
       (obj.payment = message.payment
         ? MoneyValue.toJSON(message.payment)

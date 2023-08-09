@@ -22,6 +22,8 @@ export enum InstrumentType {
   INSTRUMENT_TYPE_SP = 6,
   /** INSTRUMENT_TYPE_OPTION - Опцион. */
   INSTRUMENT_TYPE_OPTION = 7,
+  /** INSTRUMENT_TYPE_CLEARING_CERTIFICATE - Clearing certificate. */
+  INSTRUMENT_TYPE_CLEARING_CERTIFICATE = 8,
   UNRECOGNIZED = -1,
 }
 
@@ -51,6 +53,9 @@ export function instrumentTypeFromJSON(object: any): InstrumentType {
     case 7:
     case "INSTRUMENT_TYPE_OPTION":
       return InstrumentType.INSTRUMENT_TYPE_OPTION;
+    case 8:
+    case "INSTRUMENT_TYPE_CLEARING_CERTIFICATE":
+      return InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -76,6 +81,8 @@ export function instrumentTypeToJSON(object: InstrumentType): string {
       return "INSTRUMENT_TYPE_SP";
     case InstrumentType.INSTRUMENT_TYPE_OPTION:
       return "INSTRUMENT_TYPE_OPTION";
+    case InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE:
+      return "INSTRUMENT_TYPE_CLEARING_CERTIFICATE";
     case InstrumentType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -237,7 +244,7 @@ export interface MoneyValue {
   nano: number;
 }
 
-/** Котировка - денежная сумма без указания валюты */
+/** Котировка — денежная сумма без указания валюты */
 export interface Quotation {
   /** целая часть суммы, может быть отрицательным числом */
   units: number;

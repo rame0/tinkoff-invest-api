@@ -231,6 +231,8 @@ export interface StreamLimit {
   limit: number;
   /** Названия stream-методов. */
   streams: string[];
+  /** Текущее количество открытых stream-соединений. */
+  open: number;
 }
 
 /** Запрос информации о пользователе. */
@@ -839,7 +841,7 @@ export const UnaryLimit = {
 };
 
 function createBaseStreamLimit(): StreamLimit {
-  return { limit: 0, streams: [] };
+  return { limit: 0, streams: [], open: 0 };
 }
 
 export const StreamLimit = {
@@ -852,6 +854,9 @@ export const StreamLimit = {
     }
     for (const v of message.streams) {
       writer.uint32(18).string(v!);
+    }
+    if (message.open !== 0) {
+      writer.uint32(24).int32(message.open);
     }
     return writer;
   },
@@ -869,6 +874,9 @@ export const StreamLimit = {
         case 2:
           message.streams.push(reader.string());
           break;
+        case 3:
+          message.open = reader.int32();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -883,6 +891,7 @@ export const StreamLimit = {
       streams: Array.isArray(object?.streams)
         ? object.streams.map((e: any) => String(e))
         : [],
+      open: isSet(object.open) ? Number(object.open) : 0,
     };
   },
 
@@ -894,6 +903,7 @@ export const StreamLimit = {
     } else {
       obj.streams = [];
     }
+    message.open !== undefined && (obj.open = Math.round(message.open));
     return obj;
   },
 };
