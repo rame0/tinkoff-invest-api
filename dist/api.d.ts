@@ -7,12 +7,14 @@ import { Helpers } from './helpers.js';
 import { MarketStream } from './stream/market.js';
 import { InstrumentsServiceDefinition } from './generated/instruments.js';
 import { MarketDataServiceDefinition, MarketDataStreamServiceDefinition } from './generated/marketdata.js';
-import { OperationsServiceDefinition } from './generated/operations.js';
+import { OperationsServiceDefinition, OperationsStreamServiceDefinition } from './generated/operations.js';
 import { OrdersServiceDefinition, OrdersStreamServiceDefinition } from './generated/orders.js';
 import { SandboxServiceDefinition } from './generated/sandbox.js';
 import { StopOrdersServiceDefinition } from './generated/stoporders.js';
 import { UsersServiceDefinition } from './generated/users.js';
 import { TradesStream } from './stream/trades.js';
+import { PortfolioStream } from './stream/portfolio-stream.js';
+import { PositionsStream } from './stream/positions-stream.js';
 export { TinkoffApiError };
 export interface TinkoffInvestApiOptions {
     /** Токен доступа */
@@ -22,7 +24,7 @@ export interface TinkoffInvestApiOptions {
     /** API endpoint */
     endpoint?: string;
 }
-declare type ServiceDefinition = typeof InstrumentsServiceDefinition | typeof MarketDataServiceDefinition | typeof MarketDataStreamServiceDefinition | typeof OperationsServiceDefinition | typeof OrdersServiceDefinition | typeof OrdersStreamServiceDefinition | typeof SandboxServiceDefinition | typeof StopOrdersServiceDefinition | typeof UsersServiceDefinition;
+declare type ServiceDefinition = typeof InstrumentsServiceDefinition | typeof MarketDataServiceDefinition | typeof MarketDataStreamServiceDefinition | typeof OperationsServiceDefinition | typeof OrdersServiceDefinition | typeof OrdersStreamServiceDefinition | typeof SandboxServiceDefinition | typeof StopOrdersServiceDefinition | typeof UsersServiceDefinition | typeof OperationsStreamServiceDefinition;
 export declare class TinkoffInvestApi {
     options: Required<TinkoffInvestApiOptions>;
     protected channel: Channel;
@@ -31,6 +33,8 @@ export declare class TinkoffInvestApi {
     protected streamClients?: {
         market: MarketStream;
         trades: TradesStream;
+        positions: PositionsStream;
+        portfolio: PortfolioStream;
     };
     constructor(options: TinkoffInvestApiOptions);
     helpers: typeof Helpers;
@@ -952,6 +956,48 @@ export declare class TinkoffInvestApi {
             };
         };
     }>, {}>;
+    get operationsStream(): import("nice-grpc").RawClient<import("nice-grpc/lib/service-definitions/ts-proto.js").FromTsProtoServiceDefinition<{
+        readonly name: "OperationsStreamService";
+        readonly fullName: "tinkoff.public.invest.api.contract.v1.OperationsStreamService";
+        readonly methods: {
+            readonly portfolioStream: {
+                readonly name: "PortfolioStream";
+                readonly requestType: {
+                    encode(message: import("./generated/operations.js").PortfolioStreamRequest, writer?: import("protobufjs").Writer): import("protobufjs").Writer;
+                    decode(input: Uint8Array | import("protobufjs").Reader, length?: number | undefined): import("./generated/operations.js").PortfolioStreamRequest;
+                    fromJSON(object: any): import("./generated/operations.js").PortfolioStreamRequest;
+                    toJSON(message: import("./generated/operations.js").PortfolioStreamRequest): unknown;
+                };
+                readonly requestStream: false;
+                readonly responseType: {
+                    encode(message: import("./generated/operations.js").PortfolioStreamResponse, writer?: import("protobufjs").Writer): import("protobufjs").Writer;
+                    decode(input: Uint8Array | import("protobufjs").Reader, length?: number | undefined): import("./generated/operations.js").PortfolioStreamResponse;
+                    fromJSON(object: any): import("./generated/operations.js").PortfolioStreamResponse;
+                    toJSON(message: import("./generated/operations.js").PortfolioStreamResponse): unknown;
+                };
+                readonly responseStream: true;
+                readonly options: {};
+            };
+            readonly positionsStream: {
+                readonly name: "PositionsStream";
+                readonly requestType: {
+                    encode(message: import("./generated/operations.js").PositionsStreamRequest, writer?: import("protobufjs").Writer): import("protobufjs").Writer;
+                    decode(input: Uint8Array | import("protobufjs").Reader, length?: number | undefined): import("./generated/operations.js").PositionsStreamRequest;
+                    fromJSON(object: any): import("./generated/operations.js").PositionsStreamRequest;
+                    toJSON(message: import("./generated/operations.js").PositionsStreamRequest): unknown;
+                };
+                readonly requestStream: false;
+                readonly responseType: {
+                    encode(message: import("./generated/operations.js").PositionsStreamResponse, writer?: import("protobufjs").Writer): import("protobufjs").Writer;
+                    decode(input: Uint8Array | import("protobufjs").Reader, length?: number | undefined): import("./generated/operations.js").PositionsStreamResponse;
+                    fromJSON(object: any): import("./generated/operations.js").PositionsStreamResponse;
+                    toJSON(message: import("./generated/operations.js").PositionsStreamResponse): unknown;
+                };
+                readonly responseStream: true;
+                readonly options: {};
+            };
+        };
+    }>, {}>;
     get sandbox(): import("nice-grpc").RawClient<import("nice-grpc/lib/service-definitions/ts-proto.js").FromTsProtoServiceDefinition<{
         readonly name: "SandboxService";
         readonly fullName: "tinkoff.public.invest.api.contract.v1.SandboxService";
@@ -1351,6 +1397,8 @@ export declare class TinkoffInvestApi {
     get stream(): {
         market: MarketStream;
         trades: TradesStream;
+        positions: PositionsStream;
+        portfolio: PortfolioStream;
     };
     isBacktest: boolean;
     private createChannel;

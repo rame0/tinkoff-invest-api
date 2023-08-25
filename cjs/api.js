@@ -17,6 +17,8 @@ const sandbox_js_1 = require("./generated/sandbox.js");
 const stoporders_js_1 = require("./generated/stoporders.js");
 const users_js_1 = require("./generated/users.js");
 const trades_js_1 = require("./stream/trades.js");
+const portfolio_stream_js_1 = require("./stream/portfolio-stream.js");
+const positions_stream_js_1 = require("./stream/positions-stream.js");
 const defaults = {
     endpoint: 'invest-public-api.tinkoff.ru:443',
     appName: '',
@@ -36,6 +38,7 @@ class TinkoffInvestApi {
     get operations() { return this.getOrCreateClient(operations_js_1.OperationsServiceDefinition); }
     get orders() { return this.getOrCreateClient(orders_js_1.OrdersServiceDefinition); }
     get ordersStream() { return this.getOrCreateClient(orders_js_1.OrdersStreamServiceDefinition); }
+    get operationsStream() { return this.getOrCreateClient(operations_js_1.OperationsStreamServiceDefinition); }
     get sandbox() { return this.getOrCreateClient(sandbox_js_1.SandboxServiceDefinition); }
     get stoporders() { return this.getOrCreateClient(stoporders_js_1.StopOrdersServiceDefinition); }
     get users() { return this.getOrCreateClient(users_js_1.UsersServiceDefinition); }
@@ -61,6 +64,8 @@ class TinkoffInvestApi {
             this.streamClients = {
                 market: new market_js_1.MarketStream(this),
                 trades: new trades_js_1.TradesStream(this),
+                positions: new positions_stream_js_1.PositionsStream(this),
+                portfolio: new portfolio_stream_js_1.PortfolioStream(this),
             };
         }
         return this.streamClients;

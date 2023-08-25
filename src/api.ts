@@ -7,12 +7,14 @@ import { Helpers } from './helpers.js';
 import { MarketStream } from './stream/market.js';
 import { InstrumentsServiceDefinition } from './generated/instruments.js';
 import { MarketDataServiceDefinition, MarketDataStreamServiceDefinition } from './generated/marketdata.js';
-import { OperationsServiceDefinition } from './generated/operations.js';
+import {OperationsServiceDefinition, OperationsStreamServiceDefinition} from './generated/operations.js';
 import { OrdersServiceDefinition, OrdersStreamServiceDefinition } from './generated/orders.js';
 import { SandboxServiceDefinition } from './generated/sandbox.js';
 import { StopOrdersServiceDefinition } from './generated/stoporders.js';
 import { UsersServiceDefinition } from './generated/users.js';
 import { TradesStream } from './stream/trades.js';
+import { PortfolioStream } from './stream/portfolio-stream.js';
+import { PositionsStream } from './stream/positions-stream.js';
 
 export { TinkoffApiError };
 
@@ -38,14 +40,15 @@ type ServiceDefinition = typeof InstrumentsServiceDefinition
   | typeof OrdersStreamServiceDefinition
   | typeof SandboxServiceDefinition
   | typeof StopOrdersServiceDefinition
-  | typeof UsersServiceDefinition;
+  | typeof UsersServiceDefinition
+  | typeof OperationsStreamServiceDefinition;
 
 export class TinkoffInvestApi {
   options: Required<TinkoffInvestApiOptions>;
   protected channel: Channel;
   protected metadata: Metadata;
   protected clients: Map<ServiceDefinition, Client<ServiceDefinition>> = new Map();
-  protected streamClients?: { market: MarketStream, trades: TradesStream };
+  protected streamClients?: { market: MarketStream, trades: TradesStream, positions: PositionsStream, portfolio: PortfolioStream };
 
   constructor(options: TinkoffInvestApiOptions) {
     this.options = Object.assign({}, defaults, options);
@@ -60,6 +63,7 @@ export class TinkoffInvestApi {
   get operations() { return this.getOrCreateClient(OperationsServiceDefinition); }
   get orders() { return this.getOrCreateClient(OrdersServiceDefinition); }
   get ordersStream() { return this.getOrCreateClient(OrdersStreamServiceDefinition); }
+  get operationsStream() { return this.getOrCreateClient(OperationsStreamServiceDefinition); }
   get sandbox() { return this.getOrCreateClient(SandboxServiceDefinition); }
   get stoporders() { return this.getOrCreateClient(StopOrdersServiceDefinition); }
   get users() { return this.getOrCreateClient(UsersServiceDefinition); }
@@ -90,6 +94,8 @@ export class TinkoffInvestApi {
       this.streamClients = {
         market: new MarketStream(this),
         trades: new TradesStream(this),
+        positions: new PositionsStream(this),
+        portfolio: new PortfolioStream(this),
       };
     }
     return this.streamClients;
