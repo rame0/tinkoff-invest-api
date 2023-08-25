@@ -46,6 +46,8 @@ export declare enum SubscriptionStatus {
     SUBSCRIPTION_STATUS_INTERNAL_ERROR = 7,
     /** SUBSCRIPTION_STATUS_TOO_MANY_REQUESTS - Превышен лимит на количество запросов на подписки в течение установленного отрезка времени */
     SUBSCRIPTION_STATUS_TOO_MANY_REQUESTS = 8,
+    /** SUBSCRIPTION_STATUS_SUBSCRIPTION_NOT_FOUND - Активная подписка не найдена. Ошибка может возникнуть только при отписке от не существующей отписки */
+    SUBSCRIPTION_STATUS_SUBSCRIPTION_NOT_FOUND = 9,
     UNRECOGNIZED = -1
 }
 export declare function subscriptionStatusFromJSON(object: any): SubscriptionStatus;
@@ -66,16 +68,32 @@ export declare function tradeDirectionToJSON(object: TradeDirection): string;
 export declare enum CandleInterval {
     /** CANDLE_INTERVAL_UNSPECIFIED - Интервал не определён. */
     CANDLE_INTERVAL_UNSPECIFIED = 0,
-    /** CANDLE_INTERVAL_1_MIN - 1 минута. */
+    /** CANDLE_INTERVAL_1_MIN - от 1 минуты до 1 дня. */
     CANDLE_INTERVAL_1_MIN = 1,
-    /** CANDLE_INTERVAL_5_MIN - 5 минут. */
+    /** CANDLE_INTERVAL_5_MIN - от 5 минут до 1 дня. */
     CANDLE_INTERVAL_5_MIN = 2,
-    /** CANDLE_INTERVAL_15_MIN - 15 минут. */
+    /** CANDLE_INTERVAL_15_MIN - от 15 минут до 1 дня. */
     CANDLE_INTERVAL_15_MIN = 3,
-    /** CANDLE_INTERVAL_HOUR - 1 час. */
+    /** CANDLE_INTERVAL_HOUR - от 1 часа до 1 недели. */
     CANDLE_INTERVAL_HOUR = 4,
-    /** CANDLE_INTERVAL_DAY - 1 день. */
+    /** CANDLE_INTERVAL_DAY - от 1 дня до 1 года. */
     CANDLE_INTERVAL_DAY = 5,
+    /** CANDLE_INTERVAL_2_MIN - от 2 минут до 1 дня. */
+    CANDLE_INTERVAL_2_MIN = 6,
+    /** CANDLE_INTERVAL_3_MIN - от 3 минут до 1 дня. */
+    CANDLE_INTERVAL_3_MIN = 7,
+    /** CANDLE_INTERVAL_10_MIN - от 10 минут до 1 дня. */
+    CANDLE_INTERVAL_10_MIN = 8,
+    /** CANDLE_INTERVAL_30_MIN - от 30 минут до 2 дней. */
+    CANDLE_INTERVAL_30_MIN = 9,
+    /** CANDLE_INTERVAL_2_HOUR - от 2 часов до 1 месяца. */
+    CANDLE_INTERVAL_2_HOUR = 10,
+    /** CANDLE_INTERVAL_4_HOUR - от 4 часов до 1 месяца. */
+    CANDLE_INTERVAL_4_HOUR = 11,
+    /** CANDLE_INTERVAL_WEEK - от 1 недели до 2 лет. */
+    CANDLE_INTERVAL_WEEK = 12,
+    /** CANDLE_INTERVAL_MONTH - от 1 месяца до 10 лет. */
+    CANDLE_INTERVAL_MONTH = 13,
     UNRECOGNIZED = -1
 }
 export declare function candleIntervalFromJSON(object: any): CandleInterval;
@@ -143,7 +161,11 @@ export interface SubscribeCandlesRequest {
 }
 /** Запрос изменения статус подписки на свечи. */
 export interface CandleInstrument {
-    /** Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id. */
+    /**
+     * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+     *
+     * @deprecated
+     */
     figi: string;
     /** Интервал свечей. */
     interval: SubscriptionInterval;
@@ -177,7 +199,11 @@ export interface SubscribeOrderBookRequest {
 }
 /** Запрос подписки на стаканы. */
 export interface OrderBookInstrument {
-    /** Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id. */
+    /**
+     * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+     *
+     * @deprecated
+     */
     figi: string;
     /** Глубина стакана. */
     depth: number;
@@ -211,7 +237,11 @@ export interface SubscribeTradesRequest {
 }
 /** Запрос подписки на поток обезличенных сделок. */
 export interface TradeInstrument {
-    /** Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id. */
+    /**
+     * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+     *
+     * @deprecated
+     */
     figi: string;
     /** Идентификатор инструмента, принимает значение figi или instrument_uid */
     instrumentId: string;
@@ -241,7 +271,11 @@ export interface SubscribeInfoRequest {
 }
 /** Запрос подписки на торговый статус. */
 export interface InfoInstrument {
-    /** Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id. */
+    /**
+     * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+     *
+     * @deprecated
+     */
     figi: string;
     /** Идентификатор инструмента, принимает значение figi или instrument_uid */
     instrumentId: string;
@@ -271,7 +305,11 @@ export interface SubscribeLastPriceRequest {
 }
 /** Запрос подписки на последнюю цену. */
 export interface LastPriceInstrument {
-    /** Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id. */
+    /**
+     * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+     *
+     * @deprecated
+     */
     figi: string;
     /** Идентификатор инструмента, принимает значение figi или instrument_uid */
     instrumentId: string;
@@ -375,7 +413,11 @@ export interface TradingStatus {
 }
 /** Запрос исторических свечей. */
 export interface GetCandlesRequest {
-    /** Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id. */
+    /**
+     * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+     *
+     * @deprecated
+     */
     figi: string;
     /** Начало запрашиваемого периода в часовом поясе UTC. */
     from?: Date;
@@ -410,7 +452,11 @@ export interface HistoricCandle {
 }
 /** Запрос получения цен последних сделок. */
 export interface GetLastPricesRequest {
-    /** Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id. */
+    /**
+     * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+     *
+     * @deprecated
+     */
     figi: string[];
     /** Массив идентификаторов инструмента, принимает значения figi или instrument_uid. */
     instrumentId: string[];
@@ -433,7 +479,11 @@ export interface LastPrice {
 }
 /** Запрос стакана. */
 export interface GetOrderBookRequest {
-    /** Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id. */
+    /**
+     * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+     *
+     * @deprecated
+     */
     figi: string;
     /** Глубина стакана. */
     depth: number;
@@ -469,7 +519,11 @@ export interface GetOrderBookResponse {
 }
 /** Запрос получения торгового статуса. */
 export interface GetTradingStatusRequest {
-    /** Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id. */
+    /**
+     * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+     *
+     * @deprecated
+     */
     figi: string;
     /** Идентификатор инструмента, принимает значение figi или instrument_uid. */
     instrumentId: string;
@@ -501,7 +555,11 @@ export interface GetTradingStatusResponse {
 }
 /** Запрос обезличенных сделок за последний час. */
 export interface GetLastTradesRequest {
-    /** Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id. */
+    /**
+     * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+     *
+     * @deprecated
+     */
     figi: string;
     /** Начало запрашиваемого периода в часовом поясе UTC. */
     from?: Date;

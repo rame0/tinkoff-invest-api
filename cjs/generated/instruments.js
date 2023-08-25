@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetBondCouponsResponse = exports.GetBondCouponsRequest = exports.BondsResponse = exports.BondResponse = exports.InstrumentsRequest = exports.InstrumentRequest = exports.TradingDay = exports.TradingSchedule = exports.TradingSchedulesResponse = exports.TradingSchedulesRequest = exports.riskLevelToJSON = exports.riskLevelFromJSON = exports.RiskLevel = exports.realExchangeToJSON = exports.realExchangeFromJSON = exports.RealExchange = exports.editFavoritesActionTypeToJSON = exports.editFavoritesActionTypeFromJSON = exports.EditFavoritesActionType = exports.structuredProductTypeToJSON = exports.structuredProductTypeFromJSON = exports.StructuredProductType = exports.assetTypeToJSON = exports.assetTypeFromJSON = exports.AssetType = exports.shareTypeToJSON = exports.shareTypeFromJSON = exports.ShareType = exports.instrumentStatusToJSON = exports.instrumentStatusFromJSON = exports.InstrumentStatus = exports.instrumentIdTypeToJSON = exports.instrumentIdTypeFromJSON = exports.InstrumentIdType = exports.optionSettlementTypeToJSON = exports.optionSettlementTypeFromJSON = exports.OptionSettlementType = exports.optionStyleToJSON = exports.optionStyleFromJSON = exports.OptionStyle = exports.optionPaymentTypeToJSON = exports.optionPaymentTypeFromJSON = exports.OptionPaymentType = exports.optionDirectionToJSON = exports.optionDirectionFromJSON = exports.OptionDirection = exports.couponTypeToJSON = exports.couponTypeFromJSON = exports.CouponType = exports.protobufPackage = void 0;
-exports.GetCountriesRequest = exports.EditFavoritesResponse = exports.EditFavoritesRequestInstrument = exports.EditFavoritesRequest = exports.FavoriteInstrument = exports.GetFavoritesResponse = exports.GetFavoritesRequest = exports.InstrumentLink = exports.AssetInstrument = exports.Brand = exports.AssetClearingCertificate = exports.AssetEtf = exports.AssetStructuredProduct = exports.AssetBond = exports.AssetShare = exports.AssetSecurity = exports.AssetCurrency = exports.Asset = exports.AssetFull = exports.AssetsResponse = exports.AssetsRequest = exports.AssetResponse = exports.AssetRequest = exports.Dividend = exports.GetDividendsResponse = exports.GetDividendsRequest = exports.Instrument = exports.InstrumentResponse = exports.GetFuturesMarginResponse = exports.GetFuturesMarginRequest = exports.AccruedInterest = exports.GetAccruedInterestsResponse = exports.GetAccruedInterestsRequest = exports.Share = exports.Future = exports.Etf = exports.Currency = exports.Bond = exports.SharesResponse = exports.ShareResponse = exports.Option = exports.OptionsResponse = exports.OptionResponse = exports.FuturesResponse = exports.FutureResponse = exports.EtfsResponse = exports.EtfResponse = exports.CurrenciesResponse = exports.CurrencyResponse = exports.Coupon = void 0;
-exports.InstrumentsServiceDefinition = exports.GetBrandsResponse = exports.GetBrandRequest = exports.GetBrandsRequest = exports.InstrumentShort = exports.FindInstrumentResponse = exports.FindInstrumentRequest = exports.CountryResponse = exports.GetCountriesResponse = void 0;
+exports.GetBondCouponsRequest = exports.BondsResponse = exports.BondResponse = exports.FilterOptionsRequest = exports.InstrumentsRequest = exports.InstrumentRequest = exports.TradingDay = exports.TradingSchedule = exports.TradingSchedulesResponse = exports.TradingSchedulesRequest = exports.riskLevelToJSON = exports.riskLevelFromJSON = exports.RiskLevel = exports.realExchangeToJSON = exports.realExchangeFromJSON = exports.RealExchange = exports.editFavoritesActionTypeToJSON = exports.editFavoritesActionTypeFromJSON = exports.EditFavoritesActionType = exports.structuredProductTypeToJSON = exports.structuredProductTypeFromJSON = exports.StructuredProductType = exports.assetTypeToJSON = exports.assetTypeFromJSON = exports.AssetType = exports.shareTypeToJSON = exports.shareTypeFromJSON = exports.ShareType = exports.instrumentStatusToJSON = exports.instrumentStatusFromJSON = exports.InstrumentStatus = exports.instrumentIdTypeToJSON = exports.instrumentIdTypeFromJSON = exports.InstrumentIdType = exports.optionSettlementTypeToJSON = exports.optionSettlementTypeFromJSON = exports.OptionSettlementType = exports.optionStyleToJSON = exports.optionStyleFromJSON = exports.OptionStyle = exports.optionPaymentTypeToJSON = exports.optionPaymentTypeFromJSON = exports.OptionPaymentType = exports.optionDirectionToJSON = exports.optionDirectionFromJSON = exports.OptionDirection = exports.couponTypeToJSON = exports.couponTypeFromJSON = exports.CouponType = exports.protobufPackage = void 0;
+exports.EditFavoritesResponse = exports.EditFavoritesRequestInstrument = exports.EditFavoritesRequest = exports.FavoriteInstrument = exports.GetFavoritesResponse = exports.GetFavoritesRequest = exports.InstrumentLink = exports.AssetInstrument = exports.Brand = exports.AssetClearingCertificate = exports.AssetEtf = exports.AssetStructuredProduct = exports.AssetBond = exports.AssetShare = exports.AssetSecurity = exports.AssetCurrency = exports.Asset = exports.AssetFull = exports.AssetsResponse = exports.AssetsRequest = exports.AssetResponse = exports.AssetRequest = exports.Dividend = exports.GetDividendsResponse = exports.GetDividendsRequest = exports.Instrument = exports.InstrumentResponse = exports.GetFuturesMarginResponse = exports.GetFuturesMarginRequest = exports.AccruedInterest = exports.GetAccruedInterestsResponse = exports.GetAccruedInterestsRequest = exports.Share = exports.Future = exports.Etf = exports.Currency = exports.Bond = exports.SharesResponse = exports.ShareResponse = exports.Option = exports.OptionsResponse = exports.OptionResponse = exports.FuturesResponse = exports.FutureResponse = exports.EtfsResponse = exports.EtfResponse = exports.CurrenciesResponse = exports.CurrencyResponse = exports.Coupon = exports.GetBondCouponsResponse = void 0;
+exports.InstrumentsServiceDefinition = exports.GetBrandsResponse = exports.GetBrandRequest = exports.GetBrandsRequest = exports.InstrumentShort = exports.FindInstrumentResponse = exports.FindInstrumentRequest = exports.CountryResponse = exports.GetCountriesResponse = exports.GetCountriesRequest = void 0;
 /* eslint-disable */
 const long_1 = __importDefault(require("long"));
 const minimal_js_1 = __importDefault(require("protobufjs/minimal.js"));
@@ -324,7 +324,7 @@ var InstrumentStatus;
 (function (InstrumentStatus) {
     /** INSTRUMENT_STATUS_UNSPECIFIED - Значение не определено. */
     InstrumentStatus[InstrumentStatus["INSTRUMENT_STATUS_UNSPECIFIED"] = 0] = "INSTRUMENT_STATUS_UNSPECIFIED";
-    /** INSTRUMENT_STATUS_BASE - Базовый список инструментов (по умолчанию). Инструменты доступные для торговли через TINKOFF INVEST API. */
+    /** INSTRUMENT_STATUS_BASE - Базовый список инструментов (по умолчанию). Инструменты доступные для торговли через TINKOFF INVEST API. Cейчас списки бумаг, доступных из api и других интерфейсах совпадают (за исключением внебиржевых бумаг), но в будущем возможны ситуации, когда списки инструментов будут отличаться */
     InstrumentStatus[InstrumentStatus["INSTRUMENT_STATUS_BASE"] = 1] = "INSTRUMENT_STATUS_BASE";
     /** INSTRUMENT_STATUS_ALL - Список всех инструментов. */
     InstrumentStatus[InstrumentStatus["INSTRUMENT_STATUS_ALL"] = 2] = "INSTRUMENT_STATUS_ALL";
@@ -643,29 +643,25 @@ exports.realExchangeToJSON = realExchangeToJSON;
 /** Уровень риска облигации. */
 var RiskLevel;
 (function (RiskLevel) {
-    RiskLevel[RiskLevel["RISK_LEVEL_UNSPECIFIED"] = 0] = "RISK_LEVEL_UNSPECIFIED";
-    /** RISK_LEVEL_LOW - Низкий уровень риска */
-    RiskLevel[RiskLevel["RISK_LEVEL_LOW"] = 1] = "RISK_LEVEL_LOW";
-    /** RISK_LEVEL_MODERATE - Средний уровень риска */
-    RiskLevel[RiskLevel["RISK_LEVEL_MODERATE"] = 2] = "RISK_LEVEL_MODERATE";
     /** RISK_LEVEL_HIGH - Высокий уровень риска */
-    RiskLevel[RiskLevel["RISK_LEVEL_HIGH"] = 3] = "RISK_LEVEL_HIGH";
+    RiskLevel[RiskLevel["RISK_LEVEL_HIGH"] = 0] = "RISK_LEVEL_HIGH";
+    /** RISK_LEVEL_MODERATE - Средний уровень риска */
+    RiskLevel[RiskLevel["RISK_LEVEL_MODERATE"] = 1] = "RISK_LEVEL_MODERATE";
+    /** RISK_LEVEL_LOW - Низкий уровень риска */
+    RiskLevel[RiskLevel["RISK_LEVEL_LOW"] = 2] = "RISK_LEVEL_LOW";
     RiskLevel[RiskLevel["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(RiskLevel = exports.RiskLevel || (exports.RiskLevel = {}));
 function riskLevelFromJSON(object) {
     switch (object) {
         case 0:
-        case "RISK_LEVEL_UNSPECIFIED":
-            return RiskLevel.RISK_LEVEL_UNSPECIFIED;
-        case 1:
-        case "RISK_LEVEL_LOW":
-            return RiskLevel.RISK_LEVEL_LOW;
-        case 2:
-        case "RISK_LEVEL_MODERATE":
-            return RiskLevel.RISK_LEVEL_MODERATE;
-        case 3:
         case "RISK_LEVEL_HIGH":
             return RiskLevel.RISK_LEVEL_HIGH;
+        case 1:
+        case "RISK_LEVEL_MODERATE":
+            return RiskLevel.RISK_LEVEL_MODERATE;
+        case 2:
+        case "RISK_LEVEL_LOW":
+            return RiskLevel.RISK_LEVEL_LOW;
         case -1:
         case "UNRECOGNIZED":
         default:
@@ -675,14 +671,12 @@ function riskLevelFromJSON(object) {
 exports.riskLevelFromJSON = riskLevelFromJSON;
 function riskLevelToJSON(object) {
     switch (object) {
-        case RiskLevel.RISK_LEVEL_UNSPECIFIED:
-            return "RISK_LEVEL_UNSPECIFIED";
-        case RiskLevel.RISK_LEVEL_LOW:
-            return "RISK_LEVEL_LOW";
-        case RiskLevel.RISK_LEVEL_MODERATE:
-            return "RISK_LEVEL_MODERATE";
         case RiskLevel.RISK_LEVEL_HIGH:
             return "RISK_LEVEL_HIGH";
+        case RiskLevel.RISK_LEVEL_MODERATE:
+            return "RISK_LEVEL_MODERATE";
+        case RiskLevel.RISK_LEVEL_LOW:
+            return "RISK_LEVEL_LOW";
         case RiskLevel.UNRECOGNIZED:
         default:
             return "UNRECOGNIZED";
@@ -856,6 +850,8 @@ function createBaseTradingDay() {
         clearingEndTime: undefined,
         premarketStartTime: undefined,
         premarketEndTime: undefined,
+        closingAuctionStartTime: undefined,
+        openingAuctionEndTime: undefined,
     };
 }
 exports.TradingDay = {
@@ -898,6 +894,12 @@ exports.TradingDay = {
         }
         if (message.premarketEndTime !== undefined) {
             timestamp_js_1.Timestamp.encode(toTimestamp(message.premarketEndTime), writer.uint32(122).fork()).ldelim();
+        }
+        if (message.closingAuctionStartTime !== undefined) {
+            timestamp_js_1.Timestamp.encode(toTimestamp(message.closingAuctionStartTime), writer.uint32(130).fork()).ldelim();
+        }
+        if (message.openingAuctionEndTime !== undefined) {
+            timestamp_js_1.Timestamp.encode(toTimestamp(message.openingAuctionEndTime), writer.uint32(138).fork()).ldelim();
         }
         return writer;
     },
@@ -947,6 +949,12 @@ exports.TradingDay = {
                 case 15:
                     message.premarketEndTime = fromTimestamp(timestamp_js_1.Timestamp.decode(reader, reader.uint32()));
                     break;
+                case 16:
+                    message.closingAuctionStartTime = fromTimestamp(timestamp_js_1.Timestamp.decode(reader, reader.uint32()));
+                    break;
+                case 17:
+                    message.openingAuctionEndTime = fromTimestamp(timestamp_js_1.Timestamp.decode(reader, reader.uint32()));
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -993,6 +1001,12 @@ exports.TradingDay = {
             premarketEndTime: isSet(object.premarketEndTime)
                 ? fromJsonTimestamp(object.premarketEndTime)
                 : undefined,
+            closingAuctionStartTime: isSet(object.closingAuctionStartTime)
+                ? fromJsonTimestamp(object.closingAuctionStartTime)
+                : undefined,
+            openingAuctionEndTime: isSet(object.openingAuctionEndTime)
+                ? fromJsonTimestamp(object.openingAuctionEndTime)
+                : undefined,
         };
     },
     toJSON(message) {
@@ -1024,6 +1038,11 @@ exports.TradingDay = {
             (obj.premarketStartTime = message.premarketStartTime.toISOString());
         message.premarketEndTime !== undefined &&
             (obj.premarketEndTime = message.premarketEndTime.toISOString());
+        message.closingAuctionStartTime !== undefined &&
+            (obj.closingAuctionStartTime =
+                message.closingAuctionStartTime.toISOString());
+        message.openingAuctionEndTime !== undefined &&
+            (obj.openingAuctionEndTime = message.openingAuctionEndTime.toISOString());
         return obj;
     },
 };
@@ -1122,6 +1141,58 @@ exports.InstrumentsRequest = {
         const obj = {};
         message.instrumentStatus !== undefined &&
             (obj.instrumentStatus = instrumentStatusToJSON(message.instrumentStatus));
+        return obj;
+    },
+};
+function createBaseFilterOptionsRequest() {
+    return { basicAssetUid: "", basicAssetPositionUid: "" };
+}
+exports.FilterOptionsRequest = {
+    encode(message, writer = minimal_js_1.default.Writer.create()) {
+        if (message.basicAssetUid !== "") {
+            writer.uint32(10).string(message.basicAssetUid);
+        }
+        if (message.basicAssetPositionUid !== "") {
+            writer.uint32(18).string(message.basicAssetPositionUid);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_js_1.default.Reader ? input : new minimal_js_1.default.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseFilterOptionsRequest();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.basicAssetUid = reader.string();
+                    break;
+                case 2:
+                    message.basicAssetPositionUid = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return {
+            basicAssetUid: isSet(object.basicAssetUid)
+                ? String(object.basicAssetUid)
+                : "",
+            basicAssetPositionUid: isSet(object.basicAssetPositionUid)
+                ? String(object.basicAssetPositionUid)
+                : "",
+        };
+    },
+    toJSON(message) {
+        const obj = {};
+        message.basicAssetUid !== undefined &&
+            (obj.basicAssetUid = message.basicAssetUid);
+        message.basicAssetPositionUid !== undefined &&
+            (obj.basicAssetPositionUid = message.basicAssetPositionUid);
         return obj;
     },
 };
@@ -2467,6 +2538,7 @@ function createBaseBond() {
         weekendFlag: false,
         blockedTcaFlag: false,
         subordinatedFlag: false,
+        liquidityFlag: false,
         first1minCandleDate: undefined,
         first1dayCandleDate: undefined,
         riskLevel: 0,
@@ -2611,6 +2683,9 @@ exports.Bond = {
         }
         if (message.subordinatedFlag === true) {
             writer.uint32(440).bool(message.subordinatedFlag);
+        }
+        if (message.liquidityFlag === true) {
+            writer.uint32(448).bool(message.liquidityFlag);
         }
         if (message.first1minCandleDate !== undefined) {
             timestamp_js_1.Timestamp.encode(toTimestamp(message.first1minCandleDate), writer.uint32(490).fork()).ldelim();
@@ -2768,6 +2843,9 @@ exports.Bond = {
                 case 55:
                     message.subordinatedFlag = reader.bool();
                     break;
+                case 56:
+                    message.liquidityFlag = reader.bool();
+                    break;
                 case 61:
                     message.first1minCandleDate = fromTimestamp(timestamp_js_1.Timestamp.decode(reader, reader.uint32()));
                     break;
@@ -2890,6 +2968,9 @@ exports.Bond = {
             subordinatedFlag: isSet(object.subordinatedFlag)
                 ? Boolean(object.subordinatedFlag)
                 : false,
+            liquidityFlag: isSet(object.liquidityFlag)
+                ? Boolean(object.liquidityFlag)
+                : false,
             first1minCandleDate: isSet(object.first1minCandleDate)
                 ? fromJsonTimestamp(object.first1minCandleDate)
                 : undefined,
@@ -3000,6 +3081,8 @@ exports.Bond = {
             (obj.blockedTcaFlag = message.blockedTcaFlag);
         message.subordinatedFlag !== undefined &&
             (obj.subordinatedFlag = message.subordinatedFlag);
+        message.liquidityFlag !== undefined &&
+            (obj.liquidityFlag = message.liquidityFlag);
         message.first1minCandleDate !== undefined &&
             (obj.first1minCandleDate = message.first1minCandleDate.toISOString());
         message.first1dayCandleDate !== undefined &&
@@ -3459,6 +3542,7 @@ function createBaseEtf() {
         forQualInvestorFlag: false,
         weekendFlag: false,
         blockedTcaFlag: false,
+        liquidityFlag: false,
         first1minCandleDate: undefined,
         first1dayCandleDate: undefined,
     };
@@ -3572,6 +3656,9 @@ exports.Etf = {
         }
         if (message.blockedTcaFlag === true) {
             writer.uint32(352).bool(message.blockedTcaFlag);
+        }
+        if (message.liquidityFlag === true) {
+            writer.uint32(360).bool(message.liquidityFlag);
         }
         if (message.first1minCandleDate !== undefined) {
             timestamp_js_1.Timestamp.encode(toTimestamp(message.first1minCandleDate), writer.uint32(450).fork()).ldelim();
@@ -3696,6 +3783,9 @@ exports.Etf = {
                 case 44:
                     message.blockedTcaFlag = reader.bool();
                     break;
+                case 45:
+                    message.liquidityFlag = reader.bool();
+                    break;
                 case 56:
                     message.first1minCandleDate = fromTimestamp(timestamp_js_1.Timestamp.decode(reader, reader.uint32()));
                     break;
@@ -3787,6 +3877,9 @@ exports.Etf = {
             blockedTcaFlag: isSet(object.blockedTcaFlag)
                 ? Boolean(object.blockedTcaFlag)
                 : false,
+            liquidityFlag: isSet(object.liquidityFlag)
+                ? Boolean(object.liquidityFlag)
+                : false,
             first1minCandleDate: isSet(object.first1minCandleDate)
                 ? fromJsonTimestamp(object.first1minCandleDate)
                 : undefined,
@@ -3870,6 +3963,8 @@ exports.Etf = {
             (obj.weekendFlag = message.weekendFlag);
         message.blockedTcaFlag !== undefined &&
             (obj.blockedTcaFlag = message.blockedTcaFlag);
+        message.liquidityFlag !== undefined &&
+            (obj.liquidityFlag = message.liquidityFlag);
         message.first1minCandleDate !== undefined &&
             (obj.first1minCandleDate = message.first1minCandleDate.toISOString());
         message.first1dayCandleDate !== undefined &&
@@ -4392,6 +4487,7 @@ function createBaseShare() {
         forQualInvestorFlag: false,
         weekendFlag: false,
         blockedTcaFlag: false,
+        liquidityFlag: false,
         first1minCandleDate: undefined,
         first1dayCandleDate: undefined,
     };
@@ -4508,6 +4604,9 @@ exports.Share = {
         }
         if (message.blockedTcaFlag === true) {
             writer.uint32(392).bool(message.blockedTcaFlag);
+        }
+        if (message.liquidityFlag === true) {
+            writer.uint32(400).bool(message.liquidityFlag);
         }
         if (message.first1minCandleDate !== undefined) {
             timestamp_js_1.Timestamp.encode(toTimestamp(message.first1minCandleDate), writer.uint32(450).fork()).ldelim();
@@ -4635,6 +4734,9 @@ exports.Share = {
                 case 49:
                     message.blockedTcaFlag = reader.bool();
                     break;
+                case 50:
+                    message.liquidityFlag = reader.bool();
+                    break;
                 case 56:
                     message.first1minCandleDate = fromTimestamp(timestamp_js_1.Timestamp.decode(reader, reader.uint32()));
                     break;
@@ -4729,6 +4831,9 @@ exports.Share = {
             blockedTcaFlag: isSet(object.blockedTcaFlag)
                 ? Boolean(object.blockedTcaFlag)
                 : false,
+            liquidityFlag: isSet(object.liquidityFlag)
+                ? Boolean(object.liquidityFlag)
+                : false,
             first1minCandleDate: isSet(object.first1minCandleDate)
                 ? fromJsonTimestamp(object.first1minCandleDate)
                 : undefined,
@@ -4813,6 +4918,8 @@ exports.Share = {
             (obj.weekendFlag = message.weekendFlag);
         message.blockedTcaFlag !== undefined &&
             (obj.blockedTcaFlag = message.blockedTcaFlag);
+        message.liquidityFlag !== undefined &&
+            (obj.liquidityFlag = message.liquidityFlag);
         message.first1minCandleDate !== undefined &&
             (obj.first1minCandleDate = message.first1minCandleDate.toISOString());
         message.first1dayCandleDate !== undefined &&
@@ -5906,10 +6013,13 @@ exports.AssetResponse = {
     },
 };
 function createBaseAssetsRequest() {
-    return {};
+    return { instrumentType: 0 };
 }
 exports.AssetsRequest = {
-    encode(_, writer = minimal_js_1.default.Writer.create()) {
+    encode(message, writer = minimal_js_1.default.Writer.create()) {
+        if (message.instrumentType !== 0) {
+            writer.uint32(8).int32(message.instrumentType);
+        }
         return writer;
     },
     decode(input, length) {
@@ -5919,6 +6029,9 @@ exports.AssetsRequest = {
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
+                case 1:
+                    message.instrumentType = reader.int32();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -5926,11 +6039,17 @@ exports.AssetsRequest = {
         }
         return message;
     },
-    fromJSON(_) {
-        return {};
+    fromJSON(object) {
+        return {
+            instrumentType: isSet(object.instrumentType)
+                ? (0, common_js_1.instrumentTypeFromJSON)(object.instrumentType)
+                : 0,
+        };
     },
-    toJSON(_) {
+    toJSON(message) {
         const obj = {};
+        message.instrumentType !== undefined &&
+            (obj.instrumentType = (0, common_js_1.instrumentTypeToJSON)(message.instrumentType));
         return obj;
     },
 };
@@ -7703,6 +7822,7 @@ function createBaseAssetInstrument() {
         classCode: "",
         links: [],
         instrumentKind: 0,
+        positionUid: "",
     };
 }
 exports.AssetInstrument = {
@@ -7727,6 +7847,9 @@ exports.AssetInstrument = {
         }
         if (message.instrumentKind !== 0) {
             writer.uint32(80).int32(message.instrumentKind);
+        }
+        if (message.positionUid !== "") {
+            writer.uint32(90).string(message.positionUid);
         }
         return writer;
     },
@@ -7758,6 +7881,9 @@ exports.AssetInstrument = {
                 case 10:
                     message.instrumentKind = reader.int32();
                     break;
+                case 11:
+                    message.positionUid = reader.string();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -7780,6 +7906,7 @@ exports.AssetInstrument = {
             instrumentKind: isSet(object.instrumentKind)
                 ? (0, common_js_1.instrumentTypeFromJSON)(object.instrumentKind)
                 : 0,
+            positionUid: isSet(object.positionUid) ? String(object.positionUid) : "",
         };
     },
     toJSON(message) {
@@ -7798,6 +7925,8 @@ exports.AssetInstrument = {
         }
         message.instrumentKind !== undefined &&
             (obj.instrumentKind = (0, common_js_1.instrumentTypeToJSON)(message.instrumentKind));
+        message.positionUid !== undefined &&
+            (obj.positionUid = message.positionUid);
         return obj;
     },
 };
@@ -8312,12 +8441,18 @@ exports.CountryResponse = {
     },
 };
 function createBaseFindInstrumentRequest() {
-    return { query: "" };
+    return { query: "", instrumentKind: 0, apiTradeAvailableFlag: false };
 }
 exports.FindInstrumentRequest = {
     encode(message, writer = minimal_js_1.default.Writer.create()) {
         if (message.query !== "") {
             writer.uint32(10).string(message.query);
+        }
+        if (message.instrumentKind !== 0) {
+            writer.uint32(16).int32(message.instrumentKind);
+        }
+        if (message.apiTradeAvailableFlag === true) {
+            writer.uint32(24).bool(message.apiTradeAvailableFlag);
         }
         return writer;
     },
@@ -8331,6 +8466,12 @@ exports.FindInstrumentRequest = {
                 case 1:
                     message.query = reader.string();
                     break;
+                case 2:
+                    message.instrumentKind = reader.int32();
+                    break;
+                case 3:
+                    message.apiTradeAvailableFlag = reader.bool();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -8341,11 +8482,21 @@ exports.FindInstrumentRequest = {
     fromJSON(object) {
         return {
             query: isSet(object.query) ? String(object.query) : "",
+            instrumentKind: isSet(object.instrumentKind)
+                ? (0, common_js_1.instrumentTypeFromJSON)(object.instrumentKind)
+                : 0,
+            apiTradeAvailableFlag: isSet(object.apiTradeAvailableFlag)
+                ? Boolean(object.apiTradeAvailableFlag)
+                : false,
         };
     },
     toJSON(message) {
         const obj = {};
         message.query !== undefined && (obj.query = message.query);
+        message.instrumentKind !== undefined &&
+            (obj.instrumentKind = (0, common_js_1.instrumentTypeToJSON)(message.instrumentKind));
+        message.apiTradeAvailableFlag !== undefined &&
+            (obj.apiTradeAvailableFlag = message.apiTradeAvailableFlag);
         return obj;
     },
 };
@@ -8809,10 +8960,23 @@ exports.InstrumentsServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Метод получения списка опционов. */
+        /**
+         * Deprecated Метод получения списка опционов.
+         *
+         * @deprecated
+         */
         options: {
             name: "Options",
             requestType: exports.InstrumentsRequest,
+            requestStream: false,
+            responseType: exports.OptionsResponse,
+            responseStream: false,
+            options: {},
+        },
+        /** Метод получения списка опционов. */
+        optionsBy: {
+            name: "OptionsBy",
+            requestType: exports.FilterOptionsRequest,
             requestStream: false,
             responseType: exports.OptionsResponse,
             responseStream: false,
@@ -8881,7 +9045,7 @@ exports.InstrumentsServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Метод получения списка активов. */
+        /** Метод получения списка активов. Метод работает для всех инструментов, за исключением срочных - опционов и фьючерсов. */
         getAssets: {
             name: "GetAssets",
             requestType: exports.AssetsRequest,

@@ -792,6 +792,8 @@ function createBaseOperation() {
         operationType: 0,
         trades: [],
         assetUid: "",
+        positionUid: "",
+        instrumentUid: "",
     };
 }
 exports.Operation = {
@@ -840,6 +842,12 @@ exports.Operation = {
         }
         if (message.assetUid !== "") {
             writer.uint32(130).string(message.assetUid);
+        }
+        if (message.positionUid !== "") {
+            writer.uint32(138).string(message.positionUid);
+        }
+        if (message.instrumentUid !== "") {
+            writer.uint32(146).string(message.instrumentUid);
         }
         return writer;
     },
@@ -895,6 +903,12 @@ exports.Operation = {
                 case 16:
                     message.assetUid = reader.string();
                     break;
+                case 17:
+                    message.positionUid = reader.string();
+                    break;
+                case 18:
+                    message.instrumentUid = reader.string();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -933,6 +947,10 @@ exports.Operation = {
                 ? object.trades.map((e) => exports.OperationTrade.fromJSON(e))
                 : [],
             assetUid: isSet(object.assetUid) ? String(object.assetUid) : "",
+            positionUid: isSet(object.positionUid) ? String(object.positionUid) : "",
+            instrumentUid: isSet(object.instrumentUid)
+                ? String(object.instrumentUid)
+                : "",
         };
     },
     toJSON(message) {
@@ -969,6 +987,10 @@ exports.Operation = {
             obj.trades = [];
         }
         message.assetUid !== undefined && (obj.assetUid = message.assetUid);
+        message.positionUid !== undefined &&
+            (obj.positionUid = message.positionUid);
+        message.instrumentUid !== undefined &&
+            (obj.instrumentUid = message.instrumentUid);
         return obj;
     },
 };
@@ -3848,6 +3870,7 @@ function createBaseOperationItem() {
         figi: "",
         instrumentType: "",
         instrumentKind: 0,
+        positionUid: "",
         payment: undefined,
         price: undefined,
         commission: undefined,
@@ -3903,6 +3926,9 @@ exports.OperationItem = {
         }
         if (message.instrumentKind !== 0) {
             writer.uint32(272).int32(message.instrumentKind);
+        }
+        if (message.positionUid !== "") {
+            writer.uint32(282).string(message.positionUid);
         }
         if (message.payment !== undefined) {
             common_js_1.MoneyValue.encode(message.payment, writer.uint32(330).fork()).ldelim();
@@ -3991,6 +4017,9 @@ exports.OperationItem = {
                 case 34:
                     message.instrumentKind = reader.int32();
                     break;
+                case 35:
+                    message.positionUid = reader.string();
+                    break;
                 case 41:
                     message.payment = common_js_1.MoneyValue.decode(reader, reader.uint32());
                     break;
@@ -4062,6 +4091,7 @@ exports.OperationItem = {
             instrumentKind: isSet(object.instrumentKind)
                 ? (0, common_js_1.instrumentTypeFromJSON)(object.instrumentKind)
                 : 0,
+            positionUid: isSet(object.positionUid) ? String(object.positionUid) : "",
             payment: isSet(object.payment)
                 ? common_js_1.MoneyValue.fromJSON(object.payment)
                 : undefined,
@@ -4122,6 +4152,8 @@ exports.OperationItem = {
             (obj.instrumentType = message.instrumentType);
         message.instrumentKind !== undefined &&
             (obj.instrumentKind = (0, common_js_1.instrumentTypeToJSON)(message.instrumentKind));
+        message.positionUid !== undefined &&
+            (obj.positionUid = message.positionUid);
         message.payment !== undefined &&
             (obj.payment = message.payment
                 ? common_js_1.MoneyValue.toJSON(message.payment)

@@ -118,6 +118,8 @@ var SubscriptionStatus;
     SubscriptionStatus[SubscriptionStatus["SUBSCRIPTION_STATUS_INTERNAL_ERROR"] = 7] = "SUBSCRIPTION_STATUS_INTERNAL_ERROR";
     /** SUBSCRIPTION_STATUS_TOO_MANY_REQUESTS - Превышен лимит на количество запросов на подписки в течение установленного отрезка времени */
     SubscriptionStatus[SubscriptionStatus["SUBSCRIPTION_STATUS_TOO_MANY_REQUESTS"] = 8] = "SUBSCRIPTION_STATUS_TOO_MANY_REQUESTS";
+    /** SUBSCRIPTION_STATUS_SUBSCRIPTION_NOT_FOUND - Активная подписка не найдена. Ошибка может возникнуть только при отписке от не существующей отписки */
+    SubscriptionStatus[SubscriptionStatus["SUBSCRIPTION_STATUS_SUBSCRIPTION_NOT_FOUND"] = 9] = "SUBSCRIPTION_STATUS_SUBSCRIPTION_NOT_FOUND";
     SubscriptionStatus[SubscriptionStatus["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(SubscriptionStatus = exports.SubscriptionStatus || (exports.SubscriptionStatus = {}));
 function subscriptionStatusFromJSON(object) {
@@ -149,6 +151,9 @@ function subscriptionStatusFromJSON(object) {
         case 8:
         case "SUBSCRIPTION_STATUS_TOO_MANY_REQUESTS":
             return SubscriptionStatus.SUBSCRIPTION_STATUS_TOO_MANY_REQUESTS;
+        case 9:
+        case "SUBSCRIPTION_STATUS_SUBSCRIPTION_NOT_FOUND":
+            return SubscriptionStatus.SUBSCRIPTION_STATUS_SUBSCRIPTION_NOT_FOUND;
         case -1:
         case "UNRECOGNIZED":
         default:
@@ -176,6 +181,8 @@ function subscriptionStatusToJSON(object) {
             return "SUBSCRIPTION_STATUS_INTERNAL_ERROR";
         case SubscriptionStatus.SUBSCRIPTION_STATUS_TOO_MANY_REQUESTS:
             return "SUBSCRIPTION_STATUS_TOO_MANY_REQUESTS";
+        case SubscriptionStatus.SUBSCRIPTION_STATUS_SUBSCRIPTION_NOT_FOUND:
+            return "SUBSCRIPTION_STATUS_SUBSCRIPTION_NOT_FOUND";
         case SubscriptionStatus.UNRECOGNIZED:
         default:
             return "UNRECOGNIZED";
@@ -230,16 +237,32 @@ var CandleInterval;
 (function (CandleInterval) {
     /** CANDLE_INTERVAL_UNSPECIFIED - Интервал не определён. */
     CandleInterval[CandleInterval["CANDLE_INTERVAL_UNSPECIFIED"] = 0] = "CANDLE_INTERVAL_UNSPECIFIED";
-    /** CANDLE_INTERVAL_1_MIN - 1 минута. */
+    /** CANDLE_INTERVAL_1_MIN - от 1 минуты до 1 дня. */
     CandleInterval[CandleInterval["CANDLE_INTERVAL_1_MIN"] = 1] = "CANDLE_INTERVAL_1_MIN";
-    /** CANDLE_INTERVAL_5_MIN - 5 минут. */
+    /** CANDLE_INTERVAL_5_MIN - от 5 минут до 1 дня. */
     CandleInterval[CandleInterval["CANDLE_INTERVAL_5_MIN"] = 2] = "CANDLE_INTERVAL_5_MIN";
-    /** CANDLE_INTERVAL_15_MIN - 15 минут. */
+    /** CANDLE_INTERVAL_15_MIN - от 15 минут до 1 дня. */
     CandleInterval[CandleInterval["CANDLE_INTERVAL_15_MIN"] = 3] = "CANDLE_INTERVAL_15_MIN";
-    /** CANDLE_INTERVAL_HOUR - 1 час. */
+    /** CANDLE_INTERVAL_HOUR - от 1 часа до 1 недели. */
     CandleInterval[CandleInterval["CANDLE_INTERVAL_HOUR"] = 4] = "CANDLE_INTERVAL_HOUR";
-    /** CANDLE_INTERVAL_DAY - 1 день. */
+    /** CANDLE_INTERVAL_DAY - от 1 дня до 1 года. */
     CandleInterval[CandleInterval["CANDLE_INTERVAL_DAY"] = 5] = "CANDLE_INTERVAL_DAY";
+    /** CANDLE_INTERVAL_2_MIN - от 2 минут до 1 дня. */
+    CandleInterval[CandleInterval["CANDLE_INTERVAL_2_MIN"] = 6] = "CANDLE_INTERVAL_2_MIN";
+    /** CANDLE_INTERVAL_3_MIN - от 3 минут до 1 дня. */
+    CandleInterval[CandleInterval["CANDLE_INTERVAL_3_MIN"] = 7] = "CANDLE_INTERVAL_3_MIN";
+    /** CANDLE_INTERVAL_10_MIN - от 10 минут до 1 дня. */
+    CandleInterval[CandleInterval["CANDLE_INTERVAL_10_MIN"] = 8] = "CANDLE_INTERVAL_10_MIN";
+    /** CANDLE_INTERVAL_30_MIN - от 30 минут до 2 дней. */
+    CandleInterval[CandleInterval["CANDLE_INTERVAL_30_MIN"] = 9] = "CANDLE_INTERVAL_30_MIN";
+    /** CANDLE_INTERVAL_2_HOUR - от 2 часов до 1 месяца. */
+    CandleInterval[CandleInterval["CANDLE_INTERVAL_2_HOUR"] = 10] = "CANDLE_INTERVAL_2_HOUR";
+    /** CANDLE_INTERVAL_4_HOUR - от 4 часов до 1 месяца. */
+    CandleInterval[CandleInterval["CANDLE_INTERVAL_4_HOUR"] = 11] = "CANDLE_INTERVAL_4_HOUR";
+    /** CANDLE_INTERVAL_WEEK - от 1 недели до 2 лет. */
+    CandleInterval[CandleInterval["CANDLE_INTERVAL_WEEK"] = 12] = "CANDLE_INTERVAL_WEEK";
+    /** CANDLE_INTERVAL_MONTH - от 1 месяца до 10 лет. */
+    CandleInterval[CandleInterval["CANDLE_INTERVAL_MONTH"] = 13] = "CANDLE_INTERVAL_MONTH";
     CandleInterval[CandleInterval["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(CandleInterval = exports.CandleInterval || (exports.CandleInterval = {}));
 function candleIntervalFromJSON(object) {
@@ -262,6 +285,30 @@ function candleIntervalFromJSON(object) {
         case 5:
         case "CANDLE_INTERVAL_DAY":
             return CandleInterval.CANDLE_INTERVAL_DAY;
+        case 6:
+        case "CANDLE_INTERVAL_2_MIN":
+            return CandleInterval.CANDLE_INTERVAL_2_MIN;
+        case 7:
+        case "CANDLE_INTERVAL_3_MIN":
+            return CandleInterval.CANDLE_INTERVAL_3_MIN;
+        case 8:
+        case "CANDLE_INTERVAL_10_MIN":
+            return CandleInterval.CANDLE_INTERVAL_10_MIN;
+        case 9:
+        case "CANDLE_INTERVAL_30_MIN":
+            return CandleInterval.CANDLE_INTERVAL_30_MIN;
+        case 10:
+        case "CANDLE_INTERVAL_2_HOUR":
+            return CandleInterval.CANDLE_INTERVAL_2_HOUR;
+        case 11:
+        case "CANDLE_INTERVAL_4_HOUR":
+            return CandleInterval.CANDLE_INTERVAL_4_HOUR;
+        case 12:
+        case "CANDLE_INTERVAL_WEEK":
+            return CandleInterval.CANDLE_INTERVAL_WEEK;
+        case 13:
+        case "CANDLE_INTERVAL_MONTH":
+            return CandleInterval.CANDLE_INTERVAL_MONTH;
         case -1:
         case "UNRECOGNIZED":
         default:
@@ -283,6 +330,22 @@ function candleIntervalToJSON(object) {
             return "CANDLE_INTERVAL_HOUR";
         case CandleInterval.CANDLE_INTERVAL_DAY:
             return "CANDLE_INTERVAL_DAY";
+        case CandleInterval.CANDLE_INTERVAL_2_MIN:
+            return "CANDLE_INTERVAL_2_MIN";
+        case CandleInterval.CANDLE_INTERVAL_3_MIN:
+            return "CANDLE_INTERVAL_3_MIN";
+        case CandleInterval.CANDLE_INTERVAL_10_MIN:
+            return "CANDLE_INTERVAL_10_MIN";
+        case CandleInterval.CANDLE_INTERVAL_30_MIN:
+            return "CANDLE_INTERVAL_30_MIN";
+        case CandleInterval.CANDLE_INTERVAL_2_HOUR:
+            return "CANDLE_INTERVAL_2_HOUR";
+        case CandleInterval.CANDLE_INTERVAL_4_HOUR:
+            return "CANDLE_INTERVAL_4_HOUR";
+        case CandleInterval.CANDLE_INTERVAL_WEEK:
+            return "CANDLE_INTERVAL_WEEK";
+        case CandleInterval.CANDLE_INTERVAL_MONTH:
+            return "CANDLE_INTERVAL_MONTH";
         case CandleInterval.UNRECOGNIZED:
         default:
             return "UNRECOGNIZED";

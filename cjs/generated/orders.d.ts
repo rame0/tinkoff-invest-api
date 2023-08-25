@@ -22,6 +22,8 @@ export declare enum OrderType {
     ORDER_TYPE_LIMIT = 1,
     /** ORDER_TYPE_MARKET - Рыночная */
     ORDER_TYPE_MARKET = 2,
+    /** ORDER_TYPE_BESTPRICE - Лучшая цена */
+    ORDER_TYPE_BESTPRICE = 3,
     UNRECOGNIZED = -1
 }
 export declare function orderTypeFromJSON(object: any): OrderType;
@@ -97,7 +99,11 @@ export interface OrderTrade {
 }
 /** Запрос выставления торгового поручения. */
 export interface PostOrderRequest {
-    /** Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id. */
+    /**
+     * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+     *
+     * @deprecated
+     */
     figi: string;
     /** Количество лотов. */
     quantity: number;
@@ -109,14 +115,14 @@ export interface PostOrderRequest {
     accountId: string;
     /** Тип заявки. */
     orderType: OrderType;
-    /** Идентификатор запроса выставления поручения для целей идемпотентности. Максимальная длина 36 символов. */
+    /** Идентификатор запроса выставления поручения для целей идемпотентности в формате UID. Максимальная длина 36 символов. */
     orderId: string;
     /** Идентификатор инструмента, принимает значения Figi или Instrument_uid. */
     instrumentId: string;
 }
 /** Информация о выставлении поручения. */
 export interface PostOrderResponse {
-    /** Идентификатор заявки. */
+    /** Биржевой идентификатор заявки. */
     orderId: string;
     /** Текущий статус заявки. */
     executionReportStatus: OrderExecutionReportStatus;
@@ -126,7 +132,7 @@ export interface PostOrderResponse {
     lotsExecuted: number;
     /** Начальная цена заявки. Произведение количества запрошенных лотов на цену. */
     initialOrderPrice?: MoneyValue;
-    /** Исполненная средняя цена 1 одного инструмента в заявки. */
+    /** Исполненная средняя цена одного инструмента в заявке. */
     executedOrderPrice?: MoneyValue;
     /** Итоговая стоимость заявки, включающая все комиссии. */
     totalOrderAmount?: MoneyValue;
@@ -182,7 +188,7 @@ export interface GetOrdersResponse {
 }
 /** Информация о торговом поручении. */
 export interface OrderState {
-    /** Идентификатор заявки. */
+    /** Биржевой идентификатор заявки. */
     orderId: string;
     /** Текущий статус заявки. */
     executionReportStatus: OrderExecutionReportStatus;
@@ -220,6 +226,8 @@ export interface OrderState {
     orderDate?: Date;
     /** UID идентификатор инструмента. */
     instrumentUid: string;
+    /** Идентификатор ключа идемпотентности, переданный клиентом, в формате UID. Максимальная длина 36 символов. */
+    orderRequestId: string;
 }
 /** Сделки в рамках торгового поручения. */
 export interface OrderStage {

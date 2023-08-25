@@ -208,7 +208,7 @@ export declare const SandboxServiceDefinition: {
             readonly responseStream: false;
             readonly options: {};
         };
-        /** Метод получения статуса заявки в песочнице. */
+        /** Метод получения статуса заявки в песочнице. Заявки хранятся в таблице 7 дней. */
         readonly getSandboxOrderState: {
             readonly name: "GetSandboxOrderState";
             readonly requestType: {
@@ -358,7 +358,7 @@ export interface SandboxServiceServiceImplementation<CallContextExt = {}> {
     getSandboxOrders(request: GetOrdersRequest, context: CallContext & CallContextExt): Promise<GetOrdersResponse>;
     /** Метод отмены торгового поручения в песочнице. */
     cancelSandboxOrder(request: CancelOrderRequest, context: CallContext & CallContextExt): Promise<CancelOrderResponse>;
-    /** Метод получения статуса заявки в песочнице. */
+    /** Метод получения статуса заявки в песочнице. Заявки хранятся в таблице 7 дней. */
     getSandboxOrderState(request: GetOrderStateRequest, context: CallContext & CallContextExt): Promise<OrderState>;
     /** Метод получения позиций по виртуальному счёту песочницы. */
     getSandboxPositions(request: PositionsRequest, context: CallContext & CallContextExt): Promise<PositionsResponse>;
@@ -388,7 +388,7 @@ export interface SandboxServiceClient<CallOptionsExt = {}> {
     getSandboxOrders(request: GetOrdersRequest, options?: CallOptions & CallOptionsExt): Promise<GetOrdersResponse>;
     /** Метод отмены торгового поручения в песочнице. */
     cancelSandboxOrder(request: CancelOrderRequest, options?: CallOptions & CallOptionsExt): Promise<CancelOrderResponse>;
-    /** Метод получения статуса заявки в песочнице. */
+    /** Метод получения статуса заявки в песочнице. Заявки хранятся в таблице 7 дней. */
     getSandboxOrderState(request: GetOrderStateRequest, options?: CallOptions & CallOptionsExt): Promise<OrderState>;
     /** Метод получения позиций по виртуальному счёту песочницы. */
     getSandboxPositions(request: PositionsRequest, options?: CallOptions & CallOptionsExt): Promise<PositionsResponse>;

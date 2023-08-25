@@ -21,6 +21,8 @@ export var InstrumentType;
     InstrumentType[InstrumentType["INSTRUMENT_TYPE_SP"] = 6] = "INSTRUMENT_TYPE_SP";
     /** INSTRUMENT_TYPE_OPTION - Опцион. */
     InstrumentType[InstrumentType["INSTRUMENT_TYPE_OPTION"] = 7] = "INSTRUMENT_TYPE_OPTION";
+    /** INSTRUMENT_TYPE_CLEARING_CERTIFICATE - Clearing certificate. */
+    InstrumentType[InstrumentType["INSTRUMENT_TYPE_CLEARING_CERTIFICATE"] = 8] = "INSTRUMENT_TYPE_CLEARING_CERTIFICATE";
     InstrumentType[InstrumentType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(InstrumentType || (InstrumentType = {}));
 export function instrumentTypeFromJSON(object) {
@@ -49,6 +51,9 @@ export function instrumentTypeFromJSON(object) {
         case 7:
         case "INSTRUMENT_TYPE_OPTION":
             return InstrumentType.INSTRUMENT_TYPE_OPTION;
+        case 8:
+        case "INSTRUMENT_TYPE_CLEARING_CERTIFICATE":
+            return InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE;
         case -1:
         case "UNRECOGNIZED":
         default:
@@ -73,6 +78,8 @@ export function instrumentTypeToJSON(object) {
             return "INSTRUMENT_TYPE_SP";
         case InstrumentType.INSTRUMENT_TYPE_OPTION:
             return "INSTRUMENT_TYPE_OPTION";
+        case InstrumentType.INSTRUMENT_TYPE_CLEARING_CERTIFICATE:
+            return "INSTRUMENT_TYPE_CLEARING_CERTIFICATE";
         case InstrumentType.UNRECOGNIZED:
         default:
             return "UNRECOGNIZED";

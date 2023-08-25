@@ -54,6 +54,8 @@ export var OrderType;
     OrderType[OrderType["ORDER_TYPE_LIMIT"] = 1] = "ORDER_TYPE_LIMIT";
     /** ORDER_TYPE_MARKET - Рыночная */
     OrderType[OrderType["ORDER_TYPE_MARKET"] = 2] = "ORDER_TYPE_MARKET";
+    /** ORDER_TYPE_BESTPRICE - Лучшая цена */
+    OrderType[OrderType["ORDER_TYPE_BESTPRICE"] = 3] = "ORDER_TYPE_BESTPRICE";
     OrderType[OrderType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(OrderType || (OrderType = {}));
 export function orderTypeFromJSON(object) {
@@ -67,6 +69,9 @@ export function orderTypeFromJSON(object) {
         case 2:
         case "ORDER_TYPE_MARKET":
             return OrderType.ORDER_TYPE_MARKET;
+        case 3:
+        case "ORDER_TYPE_BESTPRICE":
+            return OrderType.ORDER_TYPE_BESTPRICE;
         case -1:
         case "UNRECOGNIZED":
         default:
@@ -81,6 +86,8 @@ export function orderTypeToJSON(object) {
             return "ORDER_TYPE_LIMIT";
         case OrderType.ORDER_TYPE_MARKET:
             return "ORDER_TYPE_MARKET";
+        case OrderType.ORDER_TYPE_BESTPRICE:
+            return "ORDER_TYPE_BESTPRICE";
         case OrderType.UNRECOGNIZED:
         default:
             return "UNRECOGNIZED";
@@ -1052,6 +1059,7 @@ function createBaseOrderState() {
         orderType: 0,
         orderDate: undefined,
         instrumentUid: "",
+        orderRequestId: "",
     };
 }
 export const OrderState = {
@@ -1112,6 +1120,9 @@ export const OrderState = {
         }
         if (message.instrumentUid !== "") {
             writer.uint32(154).string(message.instrumentUid);
+        }
+        if (message.orderRequestId !== "") {
+            writer.uint32(162).string(message.orderRequestId);
         }
         return writer;
     },
@@ -1179,6 +1190,9 @@ export const OrderState = {
                 case 19:
                     message.instrumentUid = reader.string();
                     break;
+                case 20:
+                    message.orderRequestId = reader.string();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -1239,6 +1253,9 @@ export const OrderState = {
             instrumentUid: isSet(object.instrumentUid)
                 ? String(object.instrumentUid)
                 : "",
+            orderRequestId: isSet(object.orderRequestId)
+                ? String(object.orderRequestId)
+                : "",
         };
     },
     toJSON(message) {
@@ -1298,6 +1315,8 @@ export const OrderState = {
             (obj.orderDate = message.orderDate.toISOString());
         message.instrumentUid !== undefined &&
             (obj.instrumentUid = message.instrumentUid);
+        message.orderRequestId !== undefined &&
+            (obj.orderRequestId = message.orderRequestId);
         return obj;
     },
 };

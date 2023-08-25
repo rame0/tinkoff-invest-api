@@ -92,7 +92,7 @@ export declare function instrumentIdTypeToJSON(object: InstrumentIdType): string
 export declare enum InstrumentStatus {
     /** INSTRUMENT_STATUS_UNSPECIFIED - Значение не определено. */
     INSTRUMENT_STATUS_UNSPECIFIED = 0,
-    /** INSTRUMENT_STATUS_BASE - Базовый список инструментов (по умолчанию). Инструменты доступные для торговли через TINKOFF INVEST API. */
+    /** INSTRUMENT_STATUS_BASE - Базовый список инструментов (по умолчанию). Инструменты доступные для торговли через TINKOFF INVEST API. Cейчас списки бумаг, доступных из api и других интерфейсах совпадают (за исключением внебиржевых бумаг), но в будущем возможны ситуации, когда списки инструментов будут отличаться */
     INSTRUMENT_STATUS_BASE = 1,
     /** INSTRUMENT_STATUS_ALL - Список всех инструментов. */
     INSTRUMENT_STATUS_ALL = 2,
@@ -180,13 +180,12 @@ export declare function realExchangeFromJSON(object: any): RealExchange;
 export declare function realExchangeToJSON(object: RealExchange): string;
 /** Уровень риска облигации. */
 export declare enum RiskLevel {
-    RISK_LEVEL_UNSPECIFIED = 0,
-    /** RISK_LEVEL_LOW - Низкий уровень риска */
-    RISK_LEVEL_LOW = 1,
-    /** RISK_LEVEL_MODERATE - Средний уровень риска */
-    RISK_LEVEL_MODERATE = 2,
     /** RISK_LEVEL_HIGH - Высокий уровень риска */
-    RISK_LEVEL_HIGH = 3,
+    RISK_LEVEL_HIGH = 0,
+    /** RISK_LEVEL_MODERATE - Средний уровень риска */
+    RISK_LEVEL_MODERATE = 1,
+    /** RISK_LEVEL_LOW - Низкий уровень риска */
+    RISK_LEVEL_LOW = 2,
     UNRECOGNIZED = -1
 }
 export declare function riskLevelFromJSON(object: any): RiskLevel;
@@ -240,6 +239,10 @@ export interface TradingDay {
     premarketStartTime?: Date;
     /** Время окончания премаркета в часовом поясе UTC. */
     premarketEndTime?: Date;
+    /** Время начала аукциона закрытия в часовом поясе UTC. */
+    closingAuctionStartTime?: Date;
+    /** Время окончания аукциона открытия в часовом поясе UTC. */
+    openingAuctionEndTime?: Date;
 }
 /** Запрос получения инструмента по идентификатору. */
 export interface InstrumentRequest {
@@ -254,6 +257,13 @@ export interface InstrumentRequest {
 export interface InstrumentsRequest {
     /** Статус запрашиваемых инструментов. Возможные значения: [InstrumentStatus](#instrumentstatus) */
     instrumentStatus: InstrumentStatus;
+}
+/** Параметры фильтрации опционов */
+export interface FilterOptionsRequest {
+    /** Идентификатор базового актива опциона.  Обязательный параметр. */
+    basicAssetUid: string;
+    /** Идентификатор позиции базового актива опциона */
+    basicAssetPositionUid: string;
 }
 /** Информация об облигации. */
 export interface BondResponse {
@@ -353,7 +363,7 @@ export interface Option {
     basicAssetPositionUid: string;
     /** Текущий режим торгов инструмента. */
     tradingStatus: SecurityTradingStatus;
-    /** Реальная площадка исполнения расчётов. Допустимые значения: [REAL_EXCHANGE_MOEX, REAL_EXCHANGE_RTS] */
+    /** Реальная площадка исполнения расчётов (биржа). Допустимые значения: [REAL_EXCHANGE_MOEX, REAL_EXCHANGE_RTS] */
     realExchange: RealExchange;
     /** Направление опциона. */
     direction: OptionDirection;
@@ -373,7 +383,7 @@ export interface Option {
     assetType: string;
     /** Основной актив. */
     basicAsset: string;
-    /** Биржа. */
+    /** Tорговая площадка (секция биржи). */
     exchange: string;
     /** Код страны рисков. */
     countryOfRisk: string;
@@ -385,17 +395,17 @@ export interface Option {
     lot: number;
     /** Размер основного актива. */
     basicAssetSize?: Quotation;
-    /** Коэффициент ставки риска длинной позиции по клиенту. */
+    /** Коэффициент ставки риска длинной позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     klong?: Quotation;
-    /** Коэффициент ставки риска короткой позиции по клиенту. */
+    /** Коэффициент ставки риска короткой позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     kshort?: Quotation;
-    /** Ставка риска минимальной маржи лонг. */
+    /** Ставка риска начальной маржи для КСУР лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlong?: Quotation;
-    /** Ставка риска минимальной маржи шорт. */
+    /** Ставка риска начальной маржи для КСУР шорт.  Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshort?: Quotation;
-    /** Ставка риска начальной маржи лонг. */
+    /** Ставка риска начальной маржи для КПУР лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlongMin?: Quotation;
-    /** Ставка риска начальной маржи шорт. */
+    /** Ставка риска начальной маржи для КПУР шорт.  Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshortMin?: Quotation;
     /** Минимальный шаг цены. */
     minPriceIncrement?: Quotation;
@@ -454,23 +464,23 @@ export interface Bond {
     lot: number;
     /** Валюта расчётов. */
     currency: string;
-    /** Коэффициент ставки риска длинной позиции по инструменту. */
+    /** Коэффициент ставки риска длинной позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     klong?: Quotation;
-    /** Коэффициент ставки риска короткой позиции по инструменту. */
+    /** Коэффициент ставки риска короткой позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     kshort?: Quotation;
-    /** Ставка риска минимальной маржи в лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
+    /** Ставка риска начальной маржи для КСУР лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlong?: Quotation;
-    /** Ставка риска минимальной маржи в шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
+    /** Ставка риска начальной маржи для КСУР шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshort?: Quotation;
-    /** Ставка риска начальной маржи в лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
+    /** Ставка риска начальной маржи для КПУР лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlongMin?: Quotation;
-    /** Ставка риска начальной маржи в шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
+    /** Ставка риска начальной маржи для КПУР шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshortMin?: Quotation;
     /** Признак доступности для операций в шорт. */
     shortEnabledFlag: boolean;
     /** Название инструмента. */
     name: string;
-    /** Торговая площадка. */
+    /** Tорговая площадка (секция биржи). */
     exchange: string;
     /** Количество выплат по купонам в год. */
     couponQuantityPerYear: number;
@@ -520,7 +530,7 @@ export interface Bond {
     apiTradeAvailableFlag: boolean;
     /** Уникальный идентификатор инструмента. */
     uid: string;
-    /** Реальная площадка исполнения расчётов. */
+    /** Реальная площадка исполнения расчётов. (биржа) */
     realExchange: RealExchange;
     /** Уникальный идентификатор позиции инструмента. */
     positionUid: string;
@@ -534,6 +544,8 @@ export interface Bond {
     blockedTcaFlag: boolean;
     /** Признак субординированной облигации. */
     subordinatedFlag: boolean;
+    /** Флаг достаточной ликвидности */
+    liquidityFlag: boolean;
     /** Дата первой минутной свечи. */
     first1minCandleDate?: Date;
     /** Дата первой дневной свечи. */
@@ -555,23 +567,23 @@ export interface Currency {
     lot: number;
     /** Валюта расчётов. */
     currency: string;
-    /** Коэффициент ставки риска длинной позиции по инструменту. */
+    /** Коэффициент ставки риска длинной позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     klong?: Quotation;
-    /** Коэффициент ставки риска короткой позиции по инструменту. */
+    /** Коэффициент ставки риска короткой позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     kshort?: Quotation;
-    /** Ставка риска минимальной маржи в лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
+    /** Ставка риска начальной маржи для КСУР лонг.Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlong?: Quotation;
-    /** Ставка риска минимальной маржи в шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
+    /** Ставка риска начальной маржи для КСУР шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshort?: Quotation;
-    /** Ставка риска начальной маржи в лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
+    /** Ставка риска начальной маржи для КПУР лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlongMin?: Quotation;
-    /** Ставка риска начальной маржи в шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
+    /** Ставка риска начальной маржи для КПУР шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshortMin?: Quotation;
     /** Признак доступности для операций в шорт. */
     shortEnabledFlag: boolean;
     /** Название инструмента. */
     name: string;
-    /** Торговая площадка. */
+    /** Tорговая площадка (секция биржи) */
     exchange: string;
     /** Номинал. */
     nominal?: MoneyValue;
@@ -595,7 +607,7 @@ export interface Currency {
     apiTradeAvailableFlag: boolean;
     /** Уникальный идентификатор инструмента. */
     uid: string;
-    /** Реальная площадка исполнения расчётов. */
+    /** Реальная площадка исполнения расчётов (биржа). */
     realExchange: RealExchange;
     /** Уникальный идентификатор позиции инструмента. */
     positionUid: string;
@@ -626,23 +638,23 @@ export interface Etf {
     lot: number;
     /** Валюта расчётов. */
     currency: string;
-    /** Коэффициент ставки риска длинной позиции по инструменту. */
+    /** Коэффициент ставки риска длинной позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     klong?: Quotation;
-    /** Коэффициент ставки риска короткой позиции по инструменту. */
+    /** Коэффициент ставки риска короткой позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     kshort?: Quotation;
-    /** Ставка риска минимальной маржи в лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
+    /** Ставка риска начальной маржи для КСУР лонг.Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlong?: Quotation;
-    /** Ставка риска минимальной маржи в шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
+    /** Ставка риска начальной маржи для КСУР шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshort?: Quotation;
-    /** Ставка риска начальной маржи в лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
+    /** Ставка риска начальной маржи для КПУР лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlongMin?: Quotation;
-    /** Ставка риска начальной маржи в шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
+    /** Ставка риска начальной маржи для КПУР шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshortMin?: Quotation;
     /** Признак доступности для операций в шорт. */
     shortEnabledFlag: boolean;
     /** Название инструмента. */
     name: string;
-    /** Торговая площадка. */
+    /** Tорговая площадка (секция биржи). */
     exchange: string;
     /** Размер фиксированной комиссии фонда. */
     fixedCommission?: Quotation;
@@ -674,7 +686,7 @@ export interface Etf {
     apiTradeAvailableFlag: boolean;
     /** Уникальный идентификатор инструмента. */
     uid: string;
-    /** Реальная площадка исполнения расчётов. */
+    /** Реальная площадка исполнения расчётов (биржа). */
     realExchange: RealExchange;
     /** Уникальный идентификатор позиции инструмента. */
     positionUid: string;
@@ -686,6 +698,8 @@ export interface Etf {
     weekendFlag: boolean;
     /** Флаг заблокированного ТКС. */
     blockedTcaFlag: boolean;
+    /** Флаг достаточной ликвидности */
+    liquidityFlag: boolean;
     /** Дата первой минутной свечи. */
     first1minCandleDate?: Date;
     /** Дата первой дневной свечи. */
@@ -703,23 +717,23 @@ export interface Future {
     lot: number;
     /** Валюта расчётов. */
     currency: string;
-    /** Коэффициент ставки риска длинной позиции по клиенту. */
+    /** Коэффициент ставки риска длинной позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     klong?: Quotation;
-    /** Коэффициент ставки риска короткой позиции по клиенту. */
+    /** Коэффициент ставки риска короткой позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     kshort?: Quotation;
-    /** Ставка риска минимальной маржи в лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
+    /** Ставка риска начальной маржи для КСУР лонг.Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlong?: Quotation;
-    /** Ставка риска минимальной маржи в шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
+    /** Ставка риска начальной маржи для КСУР шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshort?: Quotation;
-    /** Ставка риска начальной маржи в лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
+    /** Ставка риска начальной маржи для КПУР лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlongMin?: Quotation;
-    /** Ставка риска начальной маржи в шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
+    /** Ставка риска начальной маржи для КПУР шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshortMin?: Quotation;
     /** Признак доступности для операций шорт. */
     shortEnabledFlag: boolean;
     /** Название инструмента. */
     name: string;
-    /** Торговая площадка. */
+    /** Tорговая площадка (секция биржи). */
     exchange: string;
     /** Дата начала обращения контракта в часовом поясе UTC. */
     firstTradeDate?: Date;
@@ -755,7 +769,7 @@ export interface Future {
     apiTradeAvailableFlag: boolean;
     /** Уникальный идентификатор инструмента. */
     uid: string;
-    /** Реальная площадка исполнения расчётов. */
+    /** Реальная площадка исполнения расчётов (биржа). */
     realExchange: RealExchange;
     /** Уникальный идентификатор позиции инструмента. */
     positionUid: string;
@@ -788,23 +802,23 @@ export interface Share {
     lot: number;
     /** Валюта расчётов. */
     currency: string;
-    /** Коэффициент ставки риска длинной позиции по инструменту. */
+    /** Коэффициент ставки риска длинной позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     klong?: Quotation;
-    /** Коэффициент ставки риска короткой позиции по инструменту. */
+    /** Коэффициент ставки риска короткой позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     kshort?: Quotation;
-    /** Ставка риска минимальной маржи в лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
+    /** Ставка риска начальной маржи для КСУР лонг.Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlong?: Quotation;
-    /** Ставка риска минимальной маржи в шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
+    /** Ставка риска начальной маржи для КСУР шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshort?: Quotation;
-    /** Ставка риска начальной маржи в лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
+    /** Ставка риска начальной маржи для КПУР лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlongMin?: Quotation;
-    /** Ставка риска начальной маржи в шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
+    /** Ставка риска начальной маржи для КПУР шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshortMin?: Quotation;
     /** Признак доступности для операций в шорт. */
     shortEnabledFlag: boolean;
     /** Название инструмента. */
     name: string;
-    /** Торговая площадка. */
+    /** Tорговая площадка (секция биржи). */
     exchange: string;
     /** Дата IPO акции в часовом поясе UTC. */
     ipoDate?: Date;
@@ -838,7 +852,7 @@ export interface Share {
     apiTradeAvailableFlag: boolean;
     /** Уникальный идентификатор инструмента. */
     uid: string;
-    /** Реальная площадка исполнения расчётов. */
+    /** Реальная площадка исполнения расчётов (биржа). */
     realExchange: RealExchange;
     /** Уникальный идентификатор позиции инструмента. */
     positionUid: string;
@@ -850,6 +864,8 @@ export interface Share {
     weekendFlag: boolean;
     /** Флаг заблокированного ТКС */
     blockedTcaFlag: boolean;
+    /** Флаг достаточной ликвидности */
+    liquidityFlag: boolean;
     /** Дата первой минутной свечи. */
     first1minCandleDate?: Date;
     /** Дата первой дневной свечи. */
@@ -915,23 +931,23 @@ export interface Instrument {
     lot: number;
     /** Валюта расчётов. */
     currency: string;
-    /** Коэффициент ставки риска длинной позиции по инструменту. */
+    /** Коэффициент ставки риска длинной позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     klong?: Quotation;
-    /** Коэффициент ставки риска короткой позиции по инструменту. */
+    /** Коэффициент ставки риска короткой позиции по клиенту. 2 – клиент со стандартным уровнем риска (КСУР). 1 – клиент с повышенным уровнем риска (КПУР) */
     kshort?: Quotation;
-    /** Ставка риска минимальной маржи в лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
+    /** ССтавка риска начальной маржи для КСУР лонг.Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlong?: Quotation;
-    /** Ставка риска минимальной маржи в шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
+    /** Ставка риска начальной маржи для КСУР шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshort?: Quotation;
-    /** Ставка риска начальной маржи в лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
+    /** Ставка риска начальной маржи для КПУР лонг. Подробнее: [ставка риска в лонг](https://help.tinkoff.ru/margin-trade/long/risk-rate/) */
     dlongMin?: Quotation;
-    /** Ставка риска начальной маржи в шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
+    /** Ставка риска начальной маржи для КПУР шорт. Подробнее: [ставка риска в шорт](https://help.tinkoff.ru/margin-trade/short/risk-rate/) */
     dshortMin?: Quotation;
     /** Признак доступности для операций в шорт. */
     shortEnabledFlag: boolean;
     /** Название инструмента. */
     name: string;
-    /** Торговая площадка. */
+    /** Tорговая площадка (секция биржи). */
     exchange: string;
     /** Код страны риска, т.е. страны, в которой компания ведёт основной бизнес. */
     countryOfRisk: string;
@@ -953,7 +969,7 @@ export interface Instrument {
     apiTradeAvailableFlag: boolean;
     /** Уникальный идентификатор инструмента. */
     uid: string;
-    /** Реальная площадка исполнения расчётов. */
+    /** Реальная площадка исполнения расчётов (биржа). */
     realExchange: RealExchange;
     /** Уникальный идентификатор позиции инструмента. */
     positionUid: string;
@@ -1020,6 +1036,7 @@ export interface AssetResponse {
 }
 /** Запрос списка активов. */
 export interface AssetsRequest {
+    instrumentType: InstrumentType;
 }
 /** Список активов. */
 export interface AssetsResponse {
@@ -1313,6 +1330,8 @@ export interface AssetInstrument {
     links: InstrumentLink[];
     /** Тип инструмента. */
     instrumentKind: InstrumentType;
+    /** id позиции. */
+    positionUid: string;
 }
 /** Связь с другим инструментом. */
 export interface InstrumentLink {
@@ -1388,6 +1407,10 @@ export interface CountryResponse {
 export interface FindInstrumentRequest {
     /** Строка поиска. */
     query: string;
+    /** Фильтр по типу инструмента. */
+    instrumentKind: InstrumentType;
+    /** Фильтр для отображения только торговых инструментов. */
+    apiTradeAvailableFlag: boolean;
 }
 /** Результат поиска инструментов. */
 export interface FindInstrumentResponse {
@@ -1477,6 +1500,12 @@ export declare const InstrumentsRequest: {
     decode(input: _m0.Reader | Uint8Array, length?: number): InstrumentsRequest;
     fromJSON(object: any): InstrumentsRequest;
     toJSON(message: InstrumentsRequest): unknown;
+};
+export declare const FilterOptionsRequest: {
+    encode(message: FilterOptionsRequest, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number): FilterOptionsRequest;
+    fromJSON(object: any): FilterOptionsRequest;
+    toJSON(message: FilterOptionsRequest): unknown;
 };
 export declare const BondResponse: {
     encode(message: BondResponse, writer?: _m0.Writer): _m0.Writer;
@@ -1677,10 +1706,10 @@ export declare const AssetResponse: {
     toJSON(message: AssetResponse): unknown;
 };
 export declare const AssetsRequest: {
-    encode(_: AssetsRequest, writer?: _m0.Writer): _m0.Writer;
+    encode(message: AssetsRequest, writer?: _m0.Writer): _m0.Writer;
     decode(input: _m0.Reader | Uint8Array, length?: number): AssetsRequest;
-    fromJSON(_: any): AssetsRequest;
-    toJSON(_: AssetsRequest): unknown;
+    fromJSON(object: any): AssetsRequest;
+    toJSON(message: AssetsRequest): unknown;
 };
 export declare const AssetsResponse: {
     encode(message: AssetsResponse, writer?: _m0.Writer): _m0.Writer;
@@ -2069,7 +2098,11 @@ export declare const InstrumentsServiceDefinition: {
             readonly responseStream: false;
             readonly options: {};
         };
-        /** Метод получения списка опционов. */
+        /**
+         * Deprecated Метод получения списка опционов.
+         *
+         * @deprecated
+         */
         readonly options: {
             readonly name: "Options";
             readonly requestType: {
@@ -2077,6 +2110,25 @@ export declare const InstrumentsServiceDefinition: {
                 decode(input: _m0.Reader | Uint8Array, length?: number): InstrumentsRequest;
                 fromJSON(object: any): InstrumentsRequest;
                 toJSON(message: InstrumentsRequest): unknown;
+            };
+            readonly requestStream: false;
+            readonly responseType: {
+                encode(message: OptionsResponse, writer?: _m0.Writer): _m0.Writer;
+                decode(input: _m0.Reader | Uint8Array, length?: number): OptionsResponse;
+                fromJSON(object: any): OptionsResponse;
+                toJSON(message: OptionsResponse): unknown;
+            };
+            readonly responseStream: false;
+            readonly options: {};
+        };
+        /** Метод получения списка опционов. */
+        readonly optionsBy: {
+            readonly name: "OptionsBy";
+            readonly requestType: {
+                encode(message: FilterOptionsRequest, writer?: _m0.Writer): _m0.Writer;
+                decode(input: _m0.Reader | Uint8Array, length?: number): FilterOptionsRequest;
+                fromJSON(object: any): FilterOptionsRequest;
+                toJSON(message: FilterOptionsRequest): unknown;
             };
             readonly requestStream: false;
             readonly responseType: {
@@ -2221,14 +2273,14 @@ export declare const InstrumentsServiceDefinition: {
             readonly responseStream: false;
             readonly options: {};
         };
-        /** Метод получения списка активов. */
+        /** Метод получения списка активов. Метод работает для всех инструментов, за исключением срочных - опционов и фьючерсов. */
         readonly getAssets: {
             readonly name: "GetAssets";
             readonly requestType: {
-                encode(_: AssetsRequest, writer?: _m0.Writer): _m0.Writer;
+                encode(message: AssetsRequest, writer?: _m0.Writer): _m0.Writer;
                 decode(input: _m0.Reader | Uint8Array, length?: number): AssetsRequest;
-                fromJSON(_: any): AssetsRequest;
-                toJSON(_: AssetsRequest): unknown;
+                fromJSON(object: any): AssetsRequest;
+                toJSON(message: AssetsRequest): unknown;
             };
             readonly requestStream: false;
             readonly responseType: {
@@ -2379,8 +2431,14 @@ export interface InstrumentsServiceServiceImplementation<CallContextExt = {}> {
     futures(request: InstrumentsRequest, context: CallContext & CallContextExt): Promise<FuturesResponse>;
     /** Метод получения опциона по его идентификатору. */
     optionBy(request: InstrumentRequest, context: CallContext & CallContextExt): Promise<OptionResponse>;
-    /** Метод получения списка опционов. */
+    /**
+     * Deprecated Метод получения списка опционов.
+     *
+     * @deprecated
+     */
     options(request: InstrumentsRequest, context: CallContext & CallContextExt): Promise<OptionsResponse>;
+    /** Метод получения списка опционов. */
+    optionsBy(request: FilterOptionsRequest, context: CallContext & CallContextExt): Promise<OptionsResponse>;
     /** Метод получения акции по её идентификатору. */
     shareBy(request: InstrumentRequest, context: CallContext & CallContextExt): Promise<ShareResponse>;
     /** Метод получения списка акций. */
@@ -2395,7 +2453,7 @@ export interface InstrumentsServiceServiceImplementation<CallContextExt = {}> {
     getDividends(request: GetDividendsRequest, context: CallContext & CallContextExt): Promise<GetDividendsResponse>;
     /** Метод получения актива по его идентификатору. */
     getAssetBy(request: AssetRequest, context: CallContext & CallContextExt): Promise<AssetResponse>;
-    /** Метод получения списка активов. */
+    /** Метод получения списка активов. Метод работает для всех инструментов, за исключением срочных - опционов и фьючерсов. */
     getAssets(request: AssetsRequest, context: CallContext & CallContextExt): Promise<AssetsResponse>;
     /** Метод получения списка избранных инструментов. */
     getFavorites(request: GetFavoritesRequest, context: CallContext & CallContextExt): Promise<GetFavoritesResponse>;
@@ -2433,8 +2491,14 @@ export interface InstrumentsServiceClient<CallOptionsExt = {}> {
     futures(request: InstrumentsRequest, options?: CallOptions & CallOptionsExt): Promise<FuturesResponse>;
     /** Метод получения опциона по его идентификатору. */
     optionBy(request: InstrumentRequest, options?: CallOptions & CallOptionsExt): Promise<OptionResponse>;
-    /** Метод получения списка опционов. */
+    /**
+     * Deprecated Метод получения списка опционов.
+     *
+     * @deprecated
+     */
     options(request: InstrumentsRequest, options?: CallOptions & CallOptionsExt): Promise<OptionsResponse>;
+    /** Метод получения списка опционов. */
+    optionsBy(request: FilterOptionsRequest, options?: CallOptions & CallOptionsExt): Promise<OptionsResponse>;
     /** Метод получения акции по её идентификатору. */
     shareBy(request: InstrumentRequest, options?: CallOptions & CallOptionsExt): Promise<ShareResponse>;
     /** Метод получения списка акций. */
@@ -2449,7 +2513,7 @@ export interface InstrumentsServiceClient<CallOptionsExt = {}> {
     getDividends(request: GetDividendsRequest, options?: CallOptions & CallOptionsExt): Promise<GetDividendsResponse>;
     /** Метод получения актива по его идентификатору. */
     getAssetBy(request: AssetRequest, options?: CallOptions & CallOptionsExt): Promise<AssetResponse>;
-    /** Метод получения списка активов. */
+    /** Метод получения списка активов. Метод работает для всех инструментов, за исключением срочных - опционов и фьючерсов. */
     getAssets(request: AssetsRequest, options?: CallOptions & CallOptionsExt): Promise<AssetsResponse>;
     /** Метод получения списка избранных инструментов. */
     getFavorites(request: GetFavoritesRequest, options?: CallOptions & CallOptionsExt): Promise<GetFavoritesResponse>;

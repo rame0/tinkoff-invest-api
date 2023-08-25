@@ -254,6 +254,24 @@ export declare class TinkoffInvestApi {
                 readonly responseStream: false;
                 readonly options: {};
             };
+            readonly optionsBy: {
+                readonly name: "OptionsBy";
+                readonly requestType: {
+                    encode(message: import("./generated/instruments.js").FilterOptionsRequest, writer?: import("protobufjs").Writer): import("protobufjs").Writer;
+                    decode(input: Uint8Array | import("protobufjs").Reader, length?: number | undefined): import("./generated/instruments.js").FilterOptionsRequest;
+                    fromJSON(object: any): import("./generated/instruments.js").FilterOptionsRequest;
+                    toJSON(message: import("./generated/instruments.js").FilterOptionsRequest): unknown;
+                };
+                readonly requestStream: false;
+                readonly responseType: {
+                    encode(message: import("./generated/instruments.js").OptionsResponse, writer?: import("protobufjs").Writer): import("protobufjs").Writer;
+                    decode(input: Uint8Array | import("protobufjs").Reader, length?: number | undefined): import("./generated/instruments.js").OptionsResponse;
+                    fromJSON(object: any): import("./generated/instruments.js").OptionsResponse;
+                    toJSON(message: import("./generated/instruments.js").OptionsResponse): unknown;
+                };
+                readonly responseStream: false;
+                readonly options: {};
+            };
             readonly shareBy: {
                 readonly name: "ShareBy";
                 readonly requestType: {
@@ -383,10 +401,10 @@ export declare class TinkoffInvestApi {
             readonly getAssets: {
                 readonly name: "GetAssets";
                 readonly requestType: {
-                    encode(_: import("./generated/instruments.js").AssetsRequest, writer?: import("protobufjs").Writer): import("protobufjs").Writer;
+                    encode(message: import("./generated/instruments.js").AssetsRequest, writer?: import("protobufjs").Writer): import("protobufjs").Writer;
                     decode(input: Uint8Array | import("protobufjs").Reader, length?: number | undefined): import("./generated/instruments.js").AssetsRequest;
-                    fromJSON(_: any): import("./generated/instruments.js").AssetsRequest;
-                    toJSON(_: import("./generated/instruments.js").AssetsRequest): unknown;
+                    fromJSON(object: any): import("./generated/instruments.js").AssetsRequest;
+                    toJSON(message: import("./generated/instruments.js").AssetsRequest): unknown;
                 };
                 readonly requestStream: false;
                 readonly responseType: {

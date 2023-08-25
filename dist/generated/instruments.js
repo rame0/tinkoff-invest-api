@@ -304,7 +304,7 @@ export var InstrumentStatus;
 (function (InstrumentStatus) {
     /** INSTRUMENT_STATUS_UNSPECIFIED - Значение не определено. */
     InstrumentStatus[InstrumentStatus["INSTRUMENT_STATUS_UNSPECIFIED"] = 0] = "INSTRUMENT_STATUS_UNSPECIFIED";
-    /** INSTRUMENT_STATUS_BASE - Базовый список инструментов (по умолчанию). Инструменты доступные для торговли через TINKOFF INVEST API. */
+    /** INSTRUMENT_STATUS_BASE - Базовый список инструментов (по умолчанию). Инструменты доступные для торговли через TINKOFF INVEST API. Cейчас списки бумаг, доступных из api и других интерфейсах совпадают (за исключением внебиржевых бумаг), но в будущем возможны ситуации, когда списки инструментов будут отличаться */
     InstrumentStatus[InstrumentStatus["INSTRUMENT_STATUS_BASE"] = 1] = "INSTRUMENT_STATUS_BASE";
     /** INSTRUMENT_STATUS_ALL - Список всех инструментов. */
     InstrumentStatus[InstrumentStatus["INSTRUMENT_STATUS_ALL"] = 2] = "INSTRUMENT_STATUS_ALL";
@@ -611,29 +611,25 @@ export function realExchangeToJSON(object) {
 /** Уровень риска облигации. */
 export var RiskLevel;
 (function (RiskLevel) {
-    RiskLevel[RiskLevel["RISK_LEVEL_UNSPECIFIED"] = 0] = "RISK_LEVEL_UNSPECIFIED";
-    /** RISK_LEVEL_LOW - Низкий уровень риска */
-    RiskLevel[RiskLevel["RISK_LEVEL_LOW"] = 1] = "RISK_LEVEL_LOW";
-    /** RISK_LEVEL_MODERATE - Средний уровень риска */
-    RiskLevel[RiskLevel["RISK_LEVEL_MODERATE"] = 2] = "RISK_LEVEL_MODERATE";
     /** RISK_LEVEL_HIGH - Высокий уровень риска */
-    RiskLevel[RiskLevel["RISK_LEVEL_HIGH"] = 3] = "RISK_LEVEL_HIGH";
+    RiskLevel[RiskLevel["RISK_LEVEL_HIGH"] = 0] = "RISK_LEVEL_HIGH";
+    /** RISK_LEVEL_MODERATE - Средний уровень риска */
+    RiskLevel[RiskLevel["RISK_LEVEL_MODERATE"] = 1] = "RISK_LEVEL_MODERATE";
+    /** RISK_LEVEL_LOW - Низкий уровень риска */
+    RiskLevel[RiskLevel["RISK_LEVEL_LOW"] = 2] = "RISK_LEVEL_LOW";
     RiskLevel[RiskLevel["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(RiskLevel || (RiskLevel = {}));
 export function riskLevelFromJSON(object) {
     switch (object) {
         case 0:
-        case "RISK_LEVEL_UNSPECIFIED":
-            return RiskLevel.RISK_LEVEL_UNSPECIFIED;
-        case 1:
-        case "RISK_LEVEL_LOW":
-            return RiskLevel.RISK_LEVEL_LOW;
-        case 2:
-        case "RISK_LEVEL_MODERATE":
-            return RiskLevel.RISK_LEVEL_MODERATE;
-        case 3:
         case "RISK_LEVEL_HIGH":
             return RiskLevel.RISK_LEVEL_HIGH;
+        case 1:
+        case "RISK_LEVEL_MODERATE":
+            return RiskLevel.RISK_LEVEL_MODERATE;
+        case 2:
+        case "RISK_LEVEL_LOW":
+            return RiskLevel.RISK_LEVEL_LOW;
         case -1:
         case "UNRECOGNIZED":
         default:
@@ -642,14 +638,12 @@ export function riskLevelFromJSON(object) {
 }
 export function riskLevelToJSON(object) {
     switch (object) {
-        case RiskLevel.RISK_LEVEL_UNSPECIFIED:
-            return "RISK_LEVEL_UNSPECIFIED";
-        case RiskLevel.RISK_LEVEL_LOW:
-            return "RISK_LEVEL_LOW";
-        case RiskLevel.RISK_LEVEL_MODERATE:
-            return "RISK_LEVEL_MODERATE";
         case RiskLevel.RISK_LEVEL_HIGH:
             return "RISK_LEVEL_HIGH";
+        case RiskLevel.RISK_LEVEL_MODERATE:
+            return "RISK_LEVEL_MODERATE";
+        case RiskLevel.RISK_LEVEL_LOW:
+            return "RISK_LEVEL_LOW";
         case RiskLevel.UNRECOGNIZED:
         default:
             return "UNRECOGNIZED";
@@ -822,6 +816,8 @@ function createBaseTradingDay() {
         clearingEndTime: undefined,
         premarketStartTime: undefined,
         premarketEndTime: undefined,
+        closingAuctionStartTime: undefined,
+        openingAuctionEndTime: undefined,
     };
 }
 export const TradingDay = {
@@ -864,6 +860,12 @@ export const TradingDay = {
         }
         if (message.premarketEndTime !== undefined) {
             Timestamp.encode(toTimestamp(message.premarketEndTime), writer.uint32(122).fork()).ldelim();
+        }
+        if (message.closingAuctionStartTime !== undefined) {
+            Timestamp.encode(toTimestamp(message.closingAuctionStartTime), writer.uint32(130).fork()).ldelim();
+        }
+        if (message.openingAuctionEndTime !== undefined) {
+            Timestamp.encode(toTimestamp(message.openingAuctionEndTime), writer.uint32(138).fork()).ldelim();
         }
         return writer;
     },
@@ -913,6 +915,12 @@ export const TradingDay = {
                 case 15:
                     message.premarketEndTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
                     break;
+                case 16:
+                    message.closingAuctionStartTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+                    break;
+                case 17:
+                    message.openingAuctionEndTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -959,6 +967,12 @@ export const TradingDay = {
             premarketEndTime: isSet(object.premarketEndTime)
                 ? fromJsonTimestamp(object.premarketEndTime)
                 : undefined,
+            closingAuctionStartTime: isSet(object.closingAuctionStartTime)
+                ? fromJsonTimestamp(object.closingAuctionStartTime)
+                : undefined,
+            openingAuctionEndTime: isSet(object.openingAuctionEndTime)
+                ? fromJsonTimestamp(object.openingAuctionEndTime)
+                : undefined,
         };
     },
     toJSON(message) {
@@ -990,6 +1004,11 @@ export const TradingDay = {
             (obj.premarketStartTime = message.premarketStartTime.toISOString());
         message.premarketEndTime !== undefined &&
             (obj.premarketEndTime = message.premarketEndTime.toISOString());
+        message.closingAuctionStartTime !== undefined &&
+            (obj.closingAuctionStartTime =
+                message.closingAuctionStartTime.toISOString());
+        message.openingAuctionEndTime !== undefined &&
+            (obj.openingAuctionEndTime = message.openingAuctionEndTime.toISOString());
         return obj;
     },
 };
@@ -1088,6 +1107,58 @@ export const InstrumentsRequest = {
         const obj = {};
         message.instrumentStatus !== undefined &&
             (obj.instrumentStatus = instrumentStatusToJSON(message.instrumentStatus));
+        return obj;
+    },
+};
+function createBaseFilterOptionsRequest() {
+    return { basicAssetUid: "", basicAssetPositionUid: "" };
+}
+export const FilterOptionsRequest = {
+    encode(message, writer = _m0.Writer.create()) {
+        if (message.basicAssetUid !== "") {
+            writer.uint32(10).string(message.basicAssetUid);
+        }
+        if (message.basicAssetPositionUid !== "") {
+            writer.uint32(18).string(message.basicAssetPositionUid);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseFilterOptionsRequest();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.basicAssetUid = reader.string();
+                    break;
+                case 2:
+                    message.basicAssetPositionUid = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return {
+            basicAssetUid: isSet(object.basicAssetUid)
+                ? String(object.basicAssetUid)
+                : "",
+            basicAssetPositionUid: isSet(object.basicAssetPositionUid)
+                ? String(object.basicAssetPositionUid)
+                : "",
+        };
+    },
+    toJSON(message) {
+        const obj = {};
+        message.basicAssetUid !== undefined &&
+            (obj.basicAssetUid = message.basicAssetUid);
+        message.basicAssetPositionUid !== undefined &&
+            (obj.basicAssetPositionUid = message.basicAssetPositionUid);
         return obj;
     },
 };
@@ -2433,6 +2504,7 @@ function createBaseBond() {
         weekendFlag: false,
         blockedTcaFlag: false,
         subordinatedFlag: false,
+        liquidityFlag: false,
         first1minCandleDate: undefined,
         first1dayCandleDate: undefined,
         riskLevel: 0,
@@ -2577,6 +2649,9 @@ export const Bond = {
         }
         if (message.subordinatedFlag === true) {
             writer.uint32(440).bool(message.subordinatedFlag);
+        }
+        if (message.liquidityFlag === true) {
+            writer.uint32(448).bool(message.liquidityFlag);
         }
         if (message.first1minCandleDate !== undefined) {
             Timestamp.encode(toTimestamp(message.first1minCandleDate), writer.uint32(490).fork()).ldelim();
@@ -2734,6 +2809,9 @@ export const Bond = {
                 case 55:
                     message.subordinatedFlag = reader.bool();
                     break;
+                case 56:
+                    message.liquidityFlag = reader.bool();
+                    break;
                 case 61:
                     message.first1minCandleDate = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
                     break;
@@ -2856,6 +2934,9 @@ export const Bond = {
             subordinatedFlag: isSet(object.subordinatedFlag)
                 ? Boolean(object.subordinatedFlag)
                 : false,
+            liquidityFlag: isSet(object.liquidityFlag)
+                ? Boolean(object.liquidityFlag)
+                : false,
             first1minCandleDate: isSet(object.first1minCandleDate)
                 ? fromJsonTimestamp(object.first1minCandleDate)
                 : undefined,
@@ -2966,6 +3047,8 @@ export const Bond = {
             (obj.blockedTcaFlag = message.blockedTcaFlag);
         message.subordinatedFlag !== undefined &&
             (obj.subordinatedFlag = message.subordinatedFlag);
+        message.liquidityFlag !== undefined &&
+            (obj.liquidityFlag = message.liquidityFlag);
         message.first1minCandleDate !== undefined &&
             (obj.first1minCandleDate = message.first1minCandleDate.toISOString());
         message.first1dayCandleDate !== undefined &&
@@ -3425,6 +3508,7 @@ function createBaseEtf() {
         forQualInvestorFlag: false,
         weekendFlag: false,
         blockedTcaFlag: false,
+        liquidityFlag: false,
         first1minCandleDate: undefined,
         first1dayCandleDate: undefined,
     };
@@ -3538,6 +3622,9 @@ export const Etf = {
         }
         if (message.blockedTcaFlag === true) {
             writer.uint32(352).bool(message.blockedTcaFlag);
+        }
+        if (message.liquidityFlag === true) {
+            writer.uint32(360).bool(message.liquidityFlag);
         }
         if (message.first1minCandleDate !== undefined) {
             Timestamp.encode(toTimestamp(message.first1minCandleDate), writer.uint32(450).fork()).ldelim();
@@ -3662,6 +3749,9 @@ export const Etf = {
                 case 44:
                     message.blockedTcaFlag = reader.bool();
                     break;
+                case 45:
+                    message.liquidityFlag = reader.bool();
+                    break;
                 case 56:
                     message.first1minCandleDate = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
                     break;
@@ -3753,6 +3843,9 @@ export const Etf = {
             blockedTcaFlag: isSet(object.blockedTcaFlag)
                 ? Boolean(object.blockedTcaFlag)
                 : false,
+            liquidityFlag: isSet(object.liquidityFlag)
+                ? Boolean(object.liquidityFlag)
+                : false,
             first1minCandleDate: isSet(object.first1minCandleDate)
                 ? fromJsonTimestamp(object.first1minCandleDate)
                 : undefined,
@@ -3836,6 +3929,8 @@ export const Etf = {
             (obj.weekendFlag = message.weekendFlag);
         message.blockedTcaFlag !== undefined &&
             (obj.blockedTcaFlag = message.blockedTcaFlag);
+        message.liquidityFlag !== undefined &&
+            (obj.liquidityFlag = message.liquidityFlag);
         message.first1minCandleDate !== undefined &&
             (obj.first1minCandleDate = message.first1minCandleDate.toISOString());
         message.first1dayCandleDate !== undefined &&
@@ -4358,6 +4453,7 @@ function createBaseShare() {
         forQualInvestorFlag: false,
         weekendFlag: false,
         blockedTcaFlag: false,
+        liquidityFlag: false,
         first1minCandleDate: undefined,
         first1dayCandleDate: undefined,
     };
@@ -4474,6 +4570,9 @@ export const Share = {
         }
         if (message.blockedTcaFlag === true) {
             writer.uint32(392).bool(message.blockedTcaFlag);
+        }
+        if (message.liquidityFlag === true) {
+            writer.uint32(400).bool(message.liquidityFlag);
         }
         if (message.first1minCandleDate !== undefined) {
             Timestamp.encode(toTimestamp(message.first1minCandleDate), writer.uint32(450).fork()).ldelim();
@@ -4601,6 +4700,9 @@ export const Share = {
                 case 49:
                     message.blockedTcaFlag = reader.bool();
                     break;
+                case 50:
+                    message.liquidityFlag = reader.bool();
+                    break;
                 case 56:
                     message.first1minCandleDate = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
                     break;
@@ -4695,6 +4797,9 @@ export const Share = {
             blockedTcaFlag: isSet(object.blockedTcaFlag)
                 ? Boolean(object.blockedTcaFlag)
                 : false,
+            liquidityFlag: isSet(object.liquidityFlag)
+                ? Boolean(object.liquidityFlag)
+                : false,
             first1minCandleDate: isSet(object.first1minCandleDate)
                 ? fromJsonTimestamp(object.first1minCandleDate)
                 : undefined,
@@ -4779,6 +4884,8 @@ export const Share = {
             (obj.weekendFlag = message.weekendFlag);
         message.blockedTcaFlag !== undefined &&
             (obj.blockedTcaFlag = message.blockedTcaFlag);
+        message.liquidityFlag !== undefined &&
+            (obj.liquidityFlag = message.liquidityFlag);
         message.first1minCandleDate !== undefined &&
             (obj.first1minCandleDate = message.first1minCandleDate.toISOString());
         message.first1dayCandleDate !== undefined &&
@@ -5872,10 +5979,13 @@ export const AssetResponse = {
     },
 };
 function createBaseAssetsRequest() {
-    return {};
+    return { instrumentType: 0 };
 }
 export const AssetsRequest = {
-    encode(_, writer = _m0.Writer.create()) {
+    encode(message, writer = _m0.Writer.create()) {
+        if (message.instrumentType !== 0) {
+            writer.uint32(8).int32(message.instrumentType);
+        }
         return writer;
     },
     decode(input, length) {
@@ -5885,6 +5995,9 @@ export const AssetsRequest = {
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
+                case 1:
+                    message.instrumentType = reader.int32();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -5892,11 +6005,17 @@ export const AssetsRequest = {
         }
         return message;
     },
-    fromJSON(_) {
-        return {};
+    fromJSON(object) {
+        return {
+            instrumentType: isSet(object.instrumentType)
+                ? instrumentTypeFromJSON(object.instrumentType)
+                : 0,
+        };
     },
-    toJSON(_) {
+    toJSON(message) {
         const obj = {};
+        message.instrumentType !== undefined &&
+            (obj.instrumentType = instrumentTypeToJSON(message.instrumentType));
         return obj;
     },
 };
@@ -7669,6 +7788,7 @@ function createBaseAssetInstrument() {
         classCode: "",
         links: [],
         instrumentKind: 0,
+        positionUid: "",
     };
 }
 export const AssetInstrument = {
@@ -7693,6 +7813,9 @@ export const AssetInstrument = {
         }
         if (message.instrumentKind !== 0) {
             writer.uint32(80).int32(message.instrumentKind);
+        }
+        if (message.positionUid !== "") {
+            writer.uint32(90).string(message.positionUid);
         }
         return writer;
     },
@@ -7724,6 +7847,9 @@ export const AssetInstrument = {
                 case 10:
                     message.instrumentKind = reader.int32();
                     break;
+                case 11:
+                    message.positionUid = reader.string();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -7746,6 +7872,7 @@ export const AssetInstrument = {
             instrumentKind: isSet(object.instrumentKind)
                 ? instrumentTypeFromJSON(object.instrumentKind)
                 : 0,
+            positionUid: isSet(object.positionUid) ? String(object.positionUid) : "",
         };
     },
     toJSON(message) {
@@ -7764,6 +7891,8 @@ export const AssetInstrument = {
         }
         message.instrumentKind !== undefined &&
             (obj.instrumentKind = instrumentTypeToJSON(message.instrumentKind));
+        message.positionUid !== undefined &&
+            (obj.positionUid = message.positionUid);
         return obj;
     },
 };
@@ -8278,12 +8407,18 @@ export const CountryResponse = {
     },
 };
 function createBaseFindInstrumentRequest() {
-    return { query: "" };
+    return { query: "", instrumentKind: 0, apiTradeAvailableFlag: false };
 }
 export const FindInstrumentRequest = {
     encode(message, writer = _m0.Writer.create()) {
         if (message.query !== "") {
             writer.uint32(10).string(message.query);
+        }
+        if (message.instrumentKind !== 0) {
+            writer.uint32(16).int32(message.instrumentKind);
+        }
+        if (message.apiTradeAvailableFlag === true) {
+            writer.uint32(24).bool(message.apiTradeAvailableFlag);
         }
         return writer;
     },
@@ -8297,6 +8432,12 @@ export const FindInstrumentRequest = {
                 case 1:
                     message.query = reader.string();
                     break;
+                case 2:
+                    message.instrumentKind = reader.int32();
+                    break;
+                case 3:
+                    message.apiTradeAvailableFlag = reader.bool();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -8307,11 +8448,21 @@ export const FindInstrumentRequest = {
     fromJSON(object) {
         return {
             query: isSet(object.query) ? String(object.query) : "",
+            instrumentKind: isSet(object.instrumentKind)
+                ? instrumentTypeFromJSON(object.instrumentKind)
+                : 0,
+            apiTradeAvailableFlag: isSet(object.apiTradeAvailableFlag)
+                ? Boolean(object.apiTradeAvailableFlag)
+                : false,
         };
     },
     toJSON(message) {
         const obj = {};
         message.query !== undefined && (obj.query = message.query);
+        message.instrumentKind !== undefined &&
+            (obj.instrumentKind = instrumentTypeToJSON(message.instrumentKind));
+        message.apiTradeAvailableFlag !== undefined &&
+            (obj.apiTradeAvailableFlag = message.apiTradeAvailableFlag);
         return obj;
     },
 };
@@ -8775,10 +8926,23 @@ export const InstrumentsServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Метод получения списка опционов. */
+        /**
+         * Deprecated Метод получения списка опционов.
+         *
+         * @deprecated
+         */
         options: {
             name: "Options",
             requestType: InstrumentsRequest,
+            requestStream: false,
+            responseType: OptionsResponse,
+            responseStream: false,
+            options: {},
+        },
+        /** Метод получения списка опционов. */
+        optionsBy: {
+            name: "OptionsBy",
+            requestType: FilterOptionsRequest,
             requestStream: false,
             responseType: OptionsResponse,
             responseStream: false,
@@ -8847,7 +9011,7 @@ export const InstrumentsServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Метод получения списка активов. */
+        /** Метод получения списка активов. Метод работает для всех инструментов, за исключением срочных - опционов и фьючерсов. */
         getAssets: {
             name: "GetAssets",
             requestType: AssetsRequest,

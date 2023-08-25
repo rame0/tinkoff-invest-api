@@ -17,6 +17,8 @@ export declare enum InstrumentType {
     INSTRUMENT_TYPE_SP = 6,
     /** INSTRUMENT_TYPE_OPTION - Опцион. */
     INSTRUMENT_TYPE_OPTION = 7,
+    /** INSTRUMENT_TYPE_CLEARING_CERTIFICATE - Clearing certificate. */
+    INSTRUMENT_TYPE_CLEARING_CERTIFICATE = 8,
     UNRECOGNIZED = -1
 }
 export declare function instrumentTypeFromJSON(object: any): InstrumentType;
@@ -70,7 +72,7 @@ export interface MoneyValue {
     /** дробная часть суммы, может быть отрицательным числом */
     nano: number;
 }
-/** Котировка - денежная сумма без указания валюты */
+/** Котировка — денежная сумма без указания валюты */
 export interface Quotation {
     /** целая часть суммы, может быть отрицательным числом */
     units: number;

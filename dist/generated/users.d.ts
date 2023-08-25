@@ -112,6 +112,8 @@ export interface StreamLimit {
     limit: number;
     /** Названия stream-методов. */
     streams: string[];
+    /** Текущее количество открытых stream-соединений. */
+    open: number;
 }
 /** Запрос информации о пользователе. */
 export interface GetInfoRequest {

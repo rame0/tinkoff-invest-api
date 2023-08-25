@@ -224,6 +224,10 @@ export interface Operation {
     trades: OperationTrade[];
     /** Идентификатор актива */
     assetUid: string;
+    /** position_uid-идентификатора инструмента. */
+    positionUid: string;
+    /** Уникальный идентификатор инструмента. */
+    instrumentUid: string;
 }
 /** Сделка по операции. */
 export interface OperationTrade {
@@ -329,13 +333,21 @@ export interface PortfolioPosition {
     expectedYield?: Quotation;
     /** Текущий НКД. */
     currentNkd?: MoneyValue;
-    /** Deprecated Средняя цена позиции в пунктах (для фьючерсов). **Возможна задержка до секунды для пересчёта**. */
+    /**
+     * Deprecated Средняя цена позиции в пунктах (для фьючерсов). **Возможна задержка до секунды для пересчёта**.
+     *
+     * @deprecated
+     */
     averagePositionPricePt?: Quotation;
     /** Текущая цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. */
     currentPrice?: MoneyValue;
     /** Средняя цена позиции по методу FIFO. **Возможна задержка до секунды для пересчёта**. */
     averagePositionPriceFifo?: MoneyValue;
-    /** Deprecated Количество лотов в портфеле. */
+    /**
+     * Deprecated Количество лотов в портфеле.
+     *
+     * @deprecated
+     */
     quantityLots?: Quotation;
     /** Заблокировано на бирже. */
     blocked: boolean;
@@ -663,6 +675,8 @@ export interface OperationItem {
     instrumentType: string;
     /** Тип инструмента. */
     instrumentKind: InstrumentType;
+    /** position_uid-идентификатора инструмента. */
+    positionUid: string;
     /** Сумма операции. */
     payment?: MoneyValue;
     /** Цена операции за 1 инструмент. */
