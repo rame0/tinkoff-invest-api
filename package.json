@@ -20,7 +20,7 @@
     "test:d": "DEBUG=tinkoff-invest-api:* npm t",
     "test:modules": "node test/modules/test.cjs && node test/modules/test.mjs",
     "pull-proto": "./scripts/pull-proto.sh",
-    "compile-proto": "./scripts/compile-proto.sh",
+    "compile-proto": "./scripts/compile-proto.py",
     "toc": "markdown-toc README.md -i",
     "build:esm": "rm -rf dist && tsc -p tsconfig.build.json",
     "build:cjs": "rm -rf cjs && tsc -p tsconfig.build.cjs.json && echo '{\"type\":\"commonjs\"}' > cjs/package.json",
