@@ -1,7 +1,14 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal.js";
-import { Quotation, MoneyValue } from "./common.js";
+import {
+  PriceType,
+  Quotation,
+  ResponseMetadata,
+  MoneyValue,
+  priceTypeFromJSON,
+  priceTypeToJSON,
+} from "./common.js";
 import { CallContext, CallOptions } from "nice-grpc-common";
 import { Timestamp } from "./google/protobuf/timestamp.js";
 
@@ -101,11 +108,11 @@ export function stopOrderExpirationTypeToJSON(
 export enum StopOrderType {
   /** STOP_ORDER_TYPE_UNSPECIFIED - Значение не указано. */
   STOP_ORDER_TYPE_UNSPECIFIED = 0,
-  /** STOP_ORDER_TYPE_TAKE_PROFIT - Take-profit заявка. */
+  /** STOP_ORDER_TYPE_TAKE_PROFIT - `Take-profit`-заявка. */
   STOP_ORDER_TYPE_TAKE_PROFIT = 1,
-  /** STOP_ORDER_TYPE_STOP_LOSS - Stop-loss заявка. */
+  /** STOP_ORDER_TYPE_STOP_LOSS - `Stop-loss`-заявка. */
   STOP_ORDER_TYPE_STOP_LOSS = 2,
-  /** STOP_ORDER_TYPE_STOP_LIMIT - Stop-limit заявка. */
+  /** STOP_ORDER_TYPE_STOP_LIMIT - `Stop-limit`-заявка. */
   STOP_ORDER_TYPE_STOP_LIMIT = 3,
   UNRECOGNIZED = -1,
 }
@@ -147,20 +154,260 @@ export function stopOrderTypeToJSON(object: StopOrderType): string {
   }
 }
 
+/** Статус стоп-заяки. */
+export enum StopOrderStatusOption {
+  /** STOP_ORDER_STATUS_UNSPECIFIED - Значение не указано. */
+  STOP_ORDER_STATUS_UNSPECIFIED = 0,
+  /** STOP_ORDER_STATUS_ALL - Все заявки. */
+  STOP_ORDER_STATUS_ALL = 1,
+  /** STOP_ORDER_STATUS_ACTIVE - Активные заявки. */
+  STOP_ORDER_STATUS_ACTIVE = 2,
+  /** STOP_ORDER_STATUS_EXECUTED - Исполненные заявки. */
+  STOP_ORDER_STATUS_EXECUTED = 3,
+  /** STOP_ORDER_STATUS_CANCELED - Отменённые заявки. */
+  STOP_ORDER_STATUS_CANCELED = 4,
+  /** STOP_ORDER_STATUS_EXPIRED - Истёкшие заявки. */
+  STOP_ORDER_STATUS_EXPIRED = 5,
+  UNRECOGNIZED = -1,
+}
+
+export function stopOrderStatusOptionFromJSON(
+  object: any
+): StopOrderStatusOption {
+  switch (object) {
+    case 0:
+    case "STOP_ORDER_STATUS_UNSPECIFIED":
+      return StopOrderStatusOption.STOP_ORDER_STATUS_UNSPECIFIED;
+    case 1:
+    case "STOP_ORDER_STATUS_ALL":
+      return StopOrderStatusOption.STOP_ORDER_STATUS_ALL;
+    case 2:
+    case "STOP_ORDER_STATUS_ACTIVE":
+      return StopOrderStatusOption.STOP_ORDER_STATUS_ACTIVE;
+    case 3:
+    case "STOP_ORDER_STATUS_EXECUTED":
+      return StopOrderStatusOption.STOP_ORDER_STATUS_EXECUTED;
+    case 4:
+    case "STOP_ORDER_STATUS_CANCELED":
+      return StopOrderStatusOption.STOP_ORDER_STATUS_CANCELED;
+    case 5:
+    case "STOP_ORDER_STATUS_EXPIRED":
+      return StopOrderStatusOption.STOP_ORDER_STATUS_EXPIRED;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return StopOrderStatusOption.UNRECOGNIZED;
+  }
+}
+
+export function stopOrderStatusOptionToJSON(
+  object: StopOrderStatusOption
+): string {
+  switch (object) {
+    case StopOrderStatusOption.STOP_ORDER_STATUS_UNSPECIFIED:
+      return "STOP_ORDER_STATUS_UNSPECIFIED";
+    case StopOrderStatusOption.STOP_ORDER_STATUS_ALL:
+      return "STOP_ORDER_STATUS_ALL";
+    case StopOrderStatusOption.STOP_ORDER_STATUS_ACTIVE:
+      return "STOP_ORDER_STATUS_ACTIVE";
+    case StopOrderStatusOption.STOP_ORDER_STATUS_EXECUTED:
+      return "STOP_ORDER_STATUS_EXECUTED";
+    case StopOrderStatusOption.STOP_ORDER_STATUS_CANCELED:
+      return "STOP_ORDER_STATUS_CANCELED";
+    case StopOrderStatusOption.STOP_ORDER_STATUS_EXPIRED:
+      return "STOP_ORDER_STATUS_EXPIRED";
+    case StopOrderStatusOption.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+/** Тип выставляемой заявки. */
+export enum ExchangeOrderType {
+  /** EXCHANGE_ORDER_TYPE_UNSPECIFIED - Значение не указано. */
+  EXCHANGE_ORDER_TYPE_UNSPECIFIED = 0,
+  /** EXCHANGE_ORDER_TYPE_MARKET - Заявка по рыночной цене. */
+  EXCHANGE_ORDER_TYPE_MARKET = 1,
+  /** EXCHANGE_ORDER_TYPE_LIMIT - Лимитная заявка. */
+  EXCHANGE_ORDER_TYPE_LIMIT = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function exchangeOrderTypeFromJSON(object: any): ExchangeOrderType {
+  switch (object) {
+    case 0:
+    case "EXCHANGE_ORDER_TYPE_UNSPECIFIED":
+      return ExchangeOrderType.EXCHANGE_ORDER_TYPE_UNSPECIFIED;
+    case 1:
+    case "EXCHANGE_ORDER_TYPE_MARKET":
+      return ExchangeOrderType.EXCHANGE_ORDER_TYPE_MARKET;
+    case 2:
+    case "EXCHANGE_ORDER_TYPE_LIMIT":
+      return ExchangeOrderType.EXCHANGE_ORDER_TYPE_LIMIT;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return ExchangeOrderType.UNRECOGNIZED;
+  }
+}
+
+export function exchangeOrderTypeToJSON(object: ExchangeOrderType): string {
+  switch (object) {
+    case ExchangeOrderType.EXCHANGE_ORDER_TYPE_UNSPECIFIED:
+      return "EXCHANGE_ORDER_TYPE_UNSPECIFIED";
+    case ExchangeOrderType.EXCHANGE_ORDER_TYPE_MARKET:
+      return "EXCHANGE_ORDER_TYPE_MARKET";
+    case ExchangeOrderType.EXCHANGE_ORDER_TYPE_LIMIT:
+      return "EXCHANGE_ORDER_TYPE_LIMIT";
+    case ExchangeOrderType.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+/** Тип TakeProfit-заявки. */
+export enum TakeProfitType {
+  /** TAKE_PROFIT_TYPE_UNSPECIFIED - Значение не указано. */
+  TAKE_PROFIT_TYPE_UNSPECIFIED = 0,
+  /** TAKE_PROFIT_TYPE_REGULAR - Обычная заявка, значение по умолчанию. */
+  TAKE_PROFIT_TYPE_REGULAR = 1,
+  /** TAKE_PROFIT_TYPE_TRAILING - Трейлинг-стоп. */
+  TAKE_PROFIT_TYPE_TRAILING = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function takeProfitTypeFromJSON(object: any): TakeProfitType {
+  switch (object) {
+    case 0:
+    case "TAKE_PROFIT_TYPE_UNSPECIFIED":
+      return TakeProfitType.TAKE_PROFIT_TYPE_UNSPECIFIED;
+    case 1:
+    case "TAKE_PROFIT_TYPE_REGULAR":
+      return TakeProfitType.TAKE_PROFIT_TYPE_REGULAR;
+    case 2:
+    case "TAKE_PROFIT_TYPE_TRAILING":
+      return TakeProfitType.TAKE_PROFIT_TYPE_TRAILING;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return TakeProfitType.UNRECOGNIZED;
+  }
+}
+
+export function takeProfitTypeToJSON(object: TakeProfitType): string {
+  switch (object) {
+    case TakeProfitType.TAKE_PROFIT_TYPE_UNSPECIFIED:
+      return "TAKE_PROFIT_TYPE_UNSPECIFIED";
+    case TakeProfitType.TAKE_PROFIT_TYPE_REGULAR:
+      return "TAKE_PROFIT_TYPE_REGULAR";
+    case TakeProfitType.TAKE_PROFIT_TYPE_TRAILING:
+      return "TAKE_PROFIT_TYPE_TRAILING";
+    case TakeProfitType.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+/** Тип параметров значений трейлинг-стопа. */
+export enum TrailingValueType {
+  /** TRAILING_VALUE_UNSPECIFIED - Значение не указано. */
+  TRAILING_VALUE_UNSPECIFIED = 0,
+  /** TRAILING_VALUE_ABSOLUTE - Абсолютное значение в единицах цены. */
+  TRAILING_VALUE_ABSOLUTE = 1,
+  /** TRAILING_VALUE_RELATIVE - Относительное значение в процентах. */
+  TRAILING_VALUE_RELATIVE = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function trailingValueTypeFromJSON(object: any): TrailingValueType {
+  switch (object) {
+    case 0:
+    case "TRAILING_VALUE_UNSPECIFIED":
+      return TrailingValueType.TRAILING_VALUE_UNSPECIFIED;
+    case 1:
+    case "TRAILING_VALUE_ABSOLUTE":
+      return TrailingValueType.TRAILING_VALUE_ABSOLUTE;
+    case 2:
+    case "TRAILING_VALUE_RELATIVE":
+      return TrailingValueType.TRAILING_VALUE_RELATIVE;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return TrailingValueType.UNRECOGNIZED;
+  }
+}
+
+export function trailingValueTypeToJSON(object: TrailingValueType): string {
+  switch (object) {
+    case TrailingValueType.TRAILING_VALUE_UNSPECIFIED:
+      return "TRAILING_VALUE_UNSPECIFIED";
+    case TrailingValueType.TRAILING_VALUE_ABSOLUTE:
+      return "TRAILING_VALUE_ABSOLUTE";
+    case TrailingValueType.TRAILING_VALUE_RELATIVE:
+      return "TRAILING_VALUE_RELATIVE";
+    case TrailingValueType.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+/** Статус трейлинг-стопа. */
+export enum TrailingStopStatus {
+  /** TRAILING_STOP_UNSPECIFIED - Значение не указано. */
+  TRAILING_STOP_UNSPECIFIED = 0,
+  /** TRAILING_STOP_ACTIVE - Активный. */
+  TRAILING_STOP_ACTIVE = 1,
+  /** TRAILING_STOP_ACTIVATED - Активированный. */
+  TRAILING_STOP_ACTIVATED = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function trailingStopStatusFromJSON(object: any): TrailingStopStatus {
+  switch (object) {
+    case 0:
+    case "TRAILING_STOP_UNSPECIFIED":
+      return TrailingStopStatus.TRAILING_STOP_UNSPECIFIED;
+    case 1:
+    case "TRAILING_STOP_ACTIVE":
+      return TrailingStopStatus.TRAILING_STOP_ACTIVE;
+    case 2:
+    case "TRAILING_STOP_ACTIVATED":
+      return TrailingStopStatus.TRAILING_STOP_ACTIVATED;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return TrailingStopStatus.UNRECOGNIZED;
+  }
+}
+
+export function trailingStopStatusToJSON(object: TrailingStopStatus): string {
+  switch (object) {
+    case TrailingStopStatus.TRAILING_STOP_UNSPECIFIED:
+      return "TRAILING_STOP_UNSPECIFIED";
+    case TrailingStopStatus.TRAILING_STOP_ACTIVE:
+      return "TRAILING_STOP_ACTIVE";
+    case TrailingStopStatus.TRAILING_STOP_ACTIVATED:
+      return "TRAILING_STOP_ACTIVATED";
+    case TrailingStopStatus.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 /** Запрос выставления стоп-заявки. */
 export interface PostStopOrderRequest {
   /**
-   * Deprecated Figi-идентификатор инструмента. Необходимо использовать instrument_id.
+   * Deprecated FIGI-идентификатор инструмента. Используйте `instrument_id`.
    *
    * @deprecated
    */
-  figi: string;
+  figi?: string | undefined;
   /** Количество лотов. */
   quantity: number;
-  /** Цена за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. */
-  price?: Quotation;
-  /** Стоп-цена заявки за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. */
-  stopPrice?: Quotation;
+  /** Цена за 1 инструмент биржевой заявки, которая будет выставлена при срабатывании по достижению `stop_price`. Чтобы получить стоимость лота, нужно умножить на лотность инструмента. */
+  price?: Quotation | undefined;
+  /** Стоп-цена заявки за 1 инструмент. При достижении стоп-цены происходит активация стоп-заявки, в результате чего выставляется биржевая заявка. Чтобы получить стоимость лота, нужно умножить на лотность инструмента. */
+  stopPrice?: Quotation | undefined;
   /** Направление операции. */
   direction: StopOrderDirection;
   /** Номер счёта. */
@@ -169,22 +416,53 @@ export interface PostStopOrderRequest {
   expirationType: StopOrderExpirationType;
   /** Тип заявки. */
   stopOrderType: StopOrderType;
-  /** Дата и время окончания действия стоп-заявки в часовом поясе UTC. **Для ExpirationType = GoodTillDate заполнение обязательно**. */
-  expireDate?: Date;
-  /** Идентификатор инструмента, принимает значения Figi или instrument_uid. */
+  /** Дата и время окончания действия стоп-заявки по UTC. Для `ExpirationType = GoodTillDate` заполнение обязательно, для `GoodTillCancel` игнорируется. */
+  expireDate?: Date | undefined;
+  /** Идентификатор инструмента. Принимает значение `figi` или `instrument_uid`. */
   instrumentId: string;
+  /** Тип дочерней биржевой заявки для тейкпрофита. */
+  exchangeOrderType: ExchangeOrderType;
+  /** Подтип стоп-заявки — `TakeProfit`. */
+  takeProfitType: TakeProfitType;
+  /** Массив с параметрами трейлинг-стопа. */
+  trailingData?: PostStopOrderRequest_TrailingData;
+  /** Тип цены. */
+  priceType: PriceType;
+  /** Идентификатор запроса выставления поручения для целей идемпотентности в формате `UID`. Максимальная длина — 36 символов. */
+  orderId: string;
+}
+
+export interface PostStopOrderRequest_TrailingData {
+  /** Отступ. */
+  indent?: Quotation;
+  /** Тип величины отступа. */
+  indentType: TrailingValueType;
+  /** Размер защитного спреда. */
+  spread?: Quotation;
+  /** Тип величины защитного спреда. */
+  spreadType: TrailingValueType;
 }
 
 /** Результат выставления стоп-заявки. */
 export interface PostStopOrderResponse {
   /** Уникальный идентификатор стоп-заявки. */
   stopOrderId: string;
+  /** Идентификатор ключа идемпотентности, переданный клиентом, в формате `UID`. Максимальная длина 36 — символов. */
+  orderRequestId: string;
+  /** Метадата. */
+  responseMetadata?: ResponseMetadata;
 }
 
 /** Запрос получения списка активных стоп-заявок. */
 export interface GetStopOrdersRequest {
   /** Идентификатор счёта клиента. */
   accountId: string;
+  /** Статус заявок. */
+  status: StopOrderStatusOption;
+  /** Левая граница. */
+  from?: Date;
+  /** Правая граница. */
+  to?: Date;
 }
 
 /** Список активных стоп-заявок. */
@@ -203,17 +481,17 @@ export interface CancelStopOrderRequest {
 
 /** Результат отмены выставленной стоп-заявки. */
 export interface CancelStopOrderResponse {
-  /** Время отмены заявки в часовом поясе UTC. */
+  /** Время отмены заявки по UTC. */
   time?: Date;
 }
 
 /** Информация о стоп-заявке. */
 export interface StopOrder {
-  /** Идентификатор-идентификатор стоп-заявки. */
+  /** Уникальный идентификатор стоп-заявки. */
   stopOrderId: string;
   /** Запрошено лотов. */
   lotsRequested: number;
-  /** Figi-идентификатор инструмента. */
+  /** FIGI-идентификатор инструмента. */
   figi: string;
   /** Направление операции. */
   direction: StopOrderDirection;
@@ -221,23 +499,50 @@ export interface StopOrder {
   currency: string;
   /** Тип стоп-заявки. */
   orderType: StopOrderType;
-  /** Дата и время выставления заявки в часовом поясе UTC. */
+  /** Дата и время выставления заявки по UTC. */
   createDate?: Date;
-  /** Дата и время конвертации стоп-заявки в биржевую в часовом поясе UTC. */
+  /** Дата и время конвертации стоп-заявки в биржевую по UTC. */
   activationDateTime?: Date;
-  /** Дата и время снятия заявки в часовом поясе UTC. */
+  /** Дата и время снятия заявки по UTC. */
   expirationTime?: Date;
-  /** Цена заявки за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. */
+  /** Цена заявки за 1 инструмент. Чтобы получить стоимость лота, нужно умножить на лотность инструмента. */
   price?: MoneyValue;
-  /** Цена активации стоп-заявки за 1 инструмент. Для получения стоимости лота требуется умножить на лотность инструмента. */
+  /** Цена активации стоп-заявки за 1 инструмент. Чтобы получить стоимость лота, нужно умножить на лотность инструмента. */
   stopPrice?: MoneyValue;
-  /** instrument_uid идентификатор инструмента. */
+  /** `instrument_uid`-идентификатор инструмента. */
   instrumentUid: string;
+  /** Подтип стоп-заявки — `TakeProfit`. */
+  takeProfitType: TakeProfitType;
+  /** Параметры трейлинг-стопа. */
+  trailingData?: StopOrder_TrailingData;
+  /** Статус заявки. */
+  status: StopOrderStatusOption;
+  /** Тип дочерней биржевой заявки для тейкпрофита. */
+  exchangeOrderType: ExchangeOrderType;
+  /** Идентификатор биржевой заявки. */
+  exchangeOrderId?: string | undefined;
+}
+
+export interface StopOrder_TrailingData {
+  /** Отступ. */
+  indent?: Quotation;
+  /** Тип величины отступа. */
+  indentType: TrailingValueType;
+  /** Размер защитного спреда. */
+  spread?: Quotation;
+  /** Тип величины защитного спреда. */
+  spreadType: TrailingValueType;
+  /** Статус трейлинг-стопа. */
+  status: TrailingStopStatus;
+  /** Цена исполнения. */
+  price?: Quotation;
+  /** Локальный экстремум. */
+  extr?: Quotation;
 }
 
 function createBasePostStopOrderRequest(): PostStopOrderRequest {
   return {
-    figi: "",
+    figi: undefined,
     quantity: 0,
     price: undefined,
     stopPrice: undefined,
@@ -247,6 +552,11 @@ function createBasePostStopOrderRequest(): PostStopOrderRequest {
     stopOrderType: 0,
     expireDate: undefined,
     instrumentId: "",
+    exchangeOrderType: 0,
+    takeProfitType: 0,
+    trailingData: undefined,
+    priceType: 0,
+    orderId: "",
   };
 }
 
@@ -255,7 +565,7 @@ export const PostStopOrderRequest = {
     message: PostStopOrderRequest,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
-    if (message.figi !== "") {
+    if (message.figi !== undefined) {
       writer.uint32(10).string(message.figi);
     }
     if (message.quantity !== 0) {
@@ -287,6 +597,24 @@ export const PostStopOrderRequest = {
     }
     if (message.instrumentId !== "") {
       writer.uint32(82).string(message.instrumentId);
+    }
+    if (message.exchangeOrderType !== 0) {
+      writer.uint32(88).int32(message.exchangeOrderType);
+    }
+    if (message.takeProfitType !== 0) {
+      writer.uint32(96).int32(message.takeProfitType);
+    }
+    if (message.trailingData !== undefined) {
+      PostStopOrderRequest_TrailingData.encode(
+        message.trailingData,
+        writer.uint32(106).fork()
+      ).ldelim();
+    }
+    if (message.priceType !== 0) {
+      writer.uint32(112).int32(message.priceType);
+    }
+    if (message.orderId !== "") {
+      writer.uint32(122).string(message.orderId);
     }
     return writer;
   },
@@ -333,6 +661,24 @@ export const PostStopOrderRequest = {
         case 10:
           message.instrumentId = reader.string();
           break;
+        case 11:
+          message.exchangeOrderType = reader.int32() as any;
+          break;
+        case 12:
+          message.takeProfitType = reader.int32() as any;
+          break;
+        case 13:
+          message.trailingData = PostStopOrderRequest_TrailingData.decode(
+            reader,
+            reader.uint32()
+          );
+          break;
+        case 14:
+          message.priceType = reader.int32() as any;
+          break;
+        case 15:
+          message.orderId = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -343,7 +689,7 @@ export const PostStopOrderRequest = {
 
   fromJSON(object: any): PostStopOrderRequest {
     return {
-      figi: isSet(object.figi) ? String(object.figi) : "",
+      figi: isSet(object.figi) ? String(object.figi) : undefined,
       quantity: isSet(object.quantity) ? Number(object.quantity) : 0,
       price: isSet(object.price) ? Quotation.fromJSON(object.price) : undefined,
       stopPrice: isSet(object.stopPrice)
@@ -365,6 +711,19 @@ export const PostStopOrderRequest = {
       instrumentId: isSet(object.instrumentId)
         ? String(object.instrumentId)
         : "",
+      exchangeOrderType: isSet(object.exchangeOrderType)
+        ? exchangeOrderTypeFromJSON(object.exchangeOrderType)
+        : 0,
+      takeProfitType: isSet(object.takeProfitType)
+        ? takeProfitTypeFromJSON(object.takeProfitType)
+        : 0,
+      trailingData: isSet(object.trailingData)
+        ? PostStopOrderRequest_TrailingData.fromJSON(object.trailingData)
+        : undefined,
+      priceType: isSet(object.priceType)
+        ? priceTypeFromJSON(object.priceType)
+        : 0,
+      orderId: isSet(object.orderId) ? String(object.orderId) : "",
     };
   },
 
@@ -392,12 +751,114 @@ export const PostStopOrderRequest = {
       (obj.expireDate = message.expireDate.toISOString());
     message.instrumentId !== undefined &&
       (obj.instrumentId = message.instrumentId);
+    message.exchangeOrderType !== undefined &&
+      (obj.exchangeOrderType = exchangeOrderTypeToJSON(
+        message.exchangeOrderType
+      ));
+    message.takeProfitType !== undefined &&
+      (obj.takeProfitType = takeProfitTypeToJSON(message.takeProfitType));
+    message.trailingData !== undefined &&
+      (obj.trailingData = message.trailingData
+        ? PostStopOrderRequest_TrailingData.toJSON(message.trailingData)
+        : undefined);
+    message.priceType !== undefined &&
+      (obj.priceType = priceTypeToJSON(message.priceType));
+    message.orderId !== undefined && (obj.orderId = message.orderId);
+    return obj;
+  },
+};
+
+function createBasePostStopOrderRequest_TrailingData(): PostStopOrderRequest_TrailingData {
+  return { indent: undefined, indentType: 0, spread: undefined, spreadType: 0 };
+}
+
+export const PostStopOrderRequest_TrailingData = {
+  encode(
+    message: PostStopOrderRequest_TrailingData,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.indent !== undefined) {
+      Quotation.encode(message.indent, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.indentType !== 0) {
+      writer.uint32(16).int32(message.indentType);
+    }
+    if (message.spread !== undefined) {
+      Quotation.encode(message.spread, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.spreadType !== 0) {
+      writer.uint32(32).int32(message.spreadType);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): PostStopOrderRequest_TrailingData {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePostStopOrderRequest_TrailingData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.indent = Quotation.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.indentType = reader.int32() as any;
+          break;
+        case 3:
+          message.spread = Quotation.decode(reader, reader.uint32());
+          break;
+        case 4:
+          message.spreadType = reader.int32() as any;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PostStopOrderRequest_TrailingData {
+    return {
+      indent: isSet(object.indent)
+        ? Quotation.fromJSON(object.indent)
+        : undefined,
+      indentType: isSet(object.indentType)
+        ? trailingValueTypeFromJSON(object.indentType)
+        : 0,
+      spread: isSet(object.spread)
+        ? Quotation.fromJSON(object.spread)
+        : undefined,
+      spreadType: isSet(object.spreadType)
+        ? trailingValueTypeFromJSON(object.spreadType)
+        : 0,
+    };
+  },
+
+  toJSON(message: PostStopOrderRequest_TrailingData): unknown {
+    const obj: any = {};
+    message.indent !== undefined &&
+      (obj.indent = message.indent
+        ? Quotation.toJSON(message.indent)
+        : undefined);
+    message.indentType !== undefined &&
+      (obj.indentType = trailingValueTypeToJSON(message.indentType));
+    message.spread !== undefined &&
+      (obj.spread = message.spread
+        ? Quotation.toJSON(message.spread)
+        : undefined);
+    message.spreadType !== undefined &&
+      (obj.spreadType = trailingValueTypeToJSON(message.spreadType));
     return obj;
   },
 };
 
 function createBasePostStopOrderResponse(): PostStopOrderResponse {
-  return { stopOrderId: "" };
+  return { stopOrderId: "", orderRequestId: "", responseMetadata: undefined };
 }
 
 export const PostStopOrderResponse = {
@@ -407,6 +868,15 @@ export const PostStopOrderResponse = {
   ): _m0.Writer {
     if (message.stopOrderId !== "") {
       writer.uint32(10).string(message.stopOrderId);
+    }
+    if (message.orderRequestId !== "") {
+      writer.uint32(18).string(message.orderRequestId);
+    }
+    if (message.responseMetadata !== undefined) {
+      ResponseMetadata.encode(
+        message.responseMetadata,
+        writer.uint32(2034).fork()
+      ).ldelim();
     }
     return writer;
   },
@@ -424,6 +894,15 @@ export const PostStopOrderResponse = {
         case 1:
           message.stopOrderId = reader.string();
           break;
+        case 2:
+          message.orderRequestId = reader.string();
+          break;
+        case 254:
+          message.responseMetadata = ResponseMetadata.decode(
+            reader,
+            reader.uint32()
+          );
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -435,6 +914,12 @@ export const PostStopOrderResponse = {
   fromJSON(object: any): PostStopOrderResponse {
     return {
       stopOrderId: isSet(object.stopOrderId) ? String(object.stopOrderId) : "",
+      orderRequestId: isSet(object.orderRequestId)
+        ? String(object.orderRequestId)
+        : "",
+      responseMetadata: isSet(object.responseMetadata)
+        ? ResponseMetadata.fromJSON(object.responseMetadata)
+        : undefined,
     };
   },
 
@@ -442,12 +927,18 @@ export const PostStopOrderResponse = {
     const obj: any = {};
     message.stopOrderId !== undefined &&
       (obj.stopOrderId = message.stopOrderId);
+    message.orderRequestId !== undefined &&
+      (obj.orderRequestId = message.orderRequestId);
+    message.responseMetadata !== undefined &&
+      (obj.responseMetadata = message.responseMetadata
+        ? ResponseMetadata.toJSON(message.responseMetadata)
+        : undefined);
     return obj;
   },
 };
 
 function createBaseGetStopOrdersRequest(): GetStopOrdersRequest {
-  return { accountId: "" };
+  return { accountId: "", status: 0, from: undefined, to: undefined };
 }
 
 export const GetStopOrdersRequest = {
@@ -457,6 +948,21 @@ export const GetStopOrdersRequest = {
   ): _m0.Writer {
     if (message.accountId !== "") {
       writer.uint32(10).string(message.accountId);
+    }
+    if (message.status !== 0) {
+      writer.uint32(16).int32(message.status);
+    }
+    if (message.from !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.from),
+        writer.uint32(26).fork()
+      ).ldelim();
+    }
+    if (message.to !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.to),
+        writer.uint32(34).fork()
+      ).ldelim();
     }
     return writer;
   },
@@ -474,6 +980,17 @@ export const GetStopOrdersRequest = {
         case 1:
           message.accountId = reader.string();
           break;
+        case 2:
+          message.status = reader.int32() as any;
+          break;
+        case 3:
+          message.from = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
+          break;
+        case 4:
+          message.to = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -485,12 +1002,21 @@ export const GetStopOrdersRequest = {
   fromJSON(object: any): GetStopOrdersRequest {
     return {
       accountId: isSet(object.accountId) ? String(object.accountId) : "",
+      status: isSet(object.status)
+        ? stopOrderStatusOptionFromJSON(object.status)
+        : 0,
+      from: isSet(object.from) ? fromJsonTimestamp(object.from) : undefined,
+      to: isSet(object.to) ? fromJsonTimestamp(object.to) : undefined,
     };
   },
 
   toJSON(message: GetStopOrdersRequest): unknown {
     const obj: any = {};
     message.accountId !== undefined && (obj.accountId = message.accountId);
+    message.status !== undefined &&
+      (obj.status = stopOrderStatusOptionToJSON(message.status));
+    message.from !== undefined && (obj.from = message.from.toISOString());
+    message.to !== undefined && (obj.to = message.to.toISOString());
     return obj;
   },
 };
@@ -678,6 +1204,11 @@ function createBaseStopOrder(): StopOrder {
     price: undefined,
     stopPrice: undefined,
     instrumentUid: "",
+    takeProfitType: 0,
+    trailingData: undefined,
+    status: 0,
+    exchangeOrderType: 0,
+    exchangeOrderId: undefined,
   };
 }
 
@@ -731,6 +1262,24 @@ export const StopOrder = {
     if (message.instrumentUid !== "") {
       writer.uint32(98).string(message.instrumentUid);
     }
+    if (message.takeProfitType !== 0) {
+      writer.uint32(104).int32(message.takeProfitType);
+    }
+    if (message.trailingData !== undefined) {
+      StopOrder_TrailingData.encode(
+        message.trailingData,
+        writer.uint32(114).fork()
+      ).ldelim();
+    }
+    if (message.status !== 0) {
+      writer.uint32(120).int32(message.status);
+    }
+    if (message.exchangeOrderType !== 0) {
+      writer.uint32(128).int32(message.exchangeOrderType);
+    }
+    if (message.exchangeOrderId !== undefined) {
+      writer.uint32(138).string(message.exchangeOrderId);
+    }
     return writer;
   },
 
@@ -783,6 +1332,24 @@ export const StopOrder = {
         case 12:
           message.instrumentUid = reader.string();
           break;
+        case 13:
+          message.takeProfitType = reader.int32() as any;
+          break;
+        case 14:
+          message.trailingData = StopOrder_TrailingData.decode(
+            reader,
+            reader.uint32()
+          );
+          break;
+        case 15:
+          message.status = reader.int32() as any;
+          break;
+        case 16:
+          message.exchangeOrderType = reader.int32() as any;
+          break;
+        case 17:
+          message.exchangeOrderId = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -823,6 +1390,21 @@ export const StopOrder = {
       instrumentUid: isSet(object.instrumentUid)
         ? String(object.instrumentUid)
         : "",
+      takeProfitType: isSet(object.takeProfitType)
+        ? takeProfitTypeFromJSON(object.takeProfitType)
+        : 0,
+      trailingData: isSet(object.trailingData)
+        ? StopOrder_TrailingData.fromJSON(object.trailingData)
+        : undefined,
+      status: isSet(object.status)
+        ? stopOrderStatusOptionFromJSON(object.status)
+        : 0,
+      exchangeOrderType: isSet(object.exchangeOrderType)
+        ? exchangeOrderTypeFromJSON(object.exchangeOrderType)
+        : 0,
+      exchangeOrderId: isSet(object.exchangeOrderId)
+        ? String(object.exchangeOrderId)
+        : undefined,
     };
   },
 
@@ -854,20 +1436,157 @@ export const StopOrder = {
         : undefined);
     message.instrumentUid !== undefined &&
       (obj.instrumentUid = message.instrumentUid);
+    message.takeProfitType !== undefined &&
+      (obj.takeProfitType = takeProfitTypeToJSON(message.takeProfitType));
+    message.trailingData !== undefined &&
+      (obj.trailingData = message.trailingData
+        ? StopOrder_TrailingData.toJSON(message.trailingData)
+        : undefined);
+    message.status !== undefined &&
+      (obj.status = stopOrderStatusOptionToJSON(message.status));
+    message.exchangeOrderType !== undefined &&
+      (obj.exchangeOrderType = exchangeOrderTypeToJSON(
+        message.exchangeOrderType
+      ));
+    message.exchangeOrderId !== undefined &&
+      (obj.exchangeOrderId = message.exchangeOrderId);
     return obj;
   },
 };
 
-/**
- * Сервис предназначен для работы со стоп-заявками:</br> **1**.
- * выставление;</br> **2**. отмена;</br> **3**. получение списка стоп-заявок.
- */
+function createBaseStopOrder_TrailingData(): StopOrder_TrailingData {
+  return {
+    indent: undefined,
+    indentType: 0,
+    spread: undefined,
+    spreadType: 0,
+    status: 0,
+    price: undefined,
+    extr: undefined,
+  };
+}
+
+export const StopOrder_TrailingData = {
+  encode(
+    message: StopOrder_TrailingData,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.indent !== undefined) {
+      Quotation.encode(message.indent, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.indentType !== 0) {
+      writer.uint32(16).int32(message.indentType);
+    }
+    if (message.spread !== undefined) {
+      Quotation.encode(message.spread, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.spreadType !== 0) {
+      writer.uint32(32).int32(message.spreadType);
+    }
+    if (message.status !== 0) {
+      writer.uint32(40).int32(message.status);
+    }
+    if (message.price !== undefined) {
+      Quotation.encode(message.price, writer.uint32(58).fork()).ldelim();
+    }
+    if (message.extr !== undefined) {
+      Quotation.encode(message.extr, writer.uint32(66).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): StopOrder_TrailingData {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseStopOrder_TrailingData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.indent = Quotation.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.indentType = reader.int32() as any;
+          break;
+        case 3:
+          message.spread = Quotation.decode(reader, reader.uint32());
+          break;
+        case 4:
+          message.spreadType = reader.int32() as any;
+          break;
+        case 5:
+          message.status = reader.int32() as any;
+          break;
+        case 7:
+          message.price = Quotation.decode(reader, reader.uint32());
+          break;
+        case 8:
+          message.extr = Quotation.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): StopOrder_TrailingData {
+    return {
+      indent: isSet(object.indent)
+        ? Quotation.fromJSON(object.indent)
+        : undefined,
+      indentType: isSet(object.indentType)
+        ? trailingValueTypeFromJSON(object.indentType)
+        : 0,
+      spread: isSet(object.spread)
+        ? Quotation.fromJSON(object.spread)
+        : undefined,
+      spreadType: isSet(object.spreadType)
+        ? trailingValueTypeFromJSON(object.spreadType)
+        : 0,
+      status: isSet(object.status)
+        ? trailingStopStatusFromJSON(object.status)
+        : 0,
+      price: isSet(object.price) ? Quotation.fromJSON(object.price) : undefined,
+      extr: isSet(object.extr) ? Quotation.fromJSON(object.extr) : undefined,
+    };
+  },
+
+  toJSON(message: StopOrder_TrailingData): unknown {
+    const obj: any = {};
+    message.indent !== undefined &&
+      (obj.indent = message.indent
+        ? Quotation.toJSON(message.indent)
+        : undefined);
+    message.indentType !== undefined &&
+      (obj.indentType = trailingValueTypeToJSON(message.indentType));
+    message.spread !== undefined &&
+      (obj.spread = message.spread
+        ? Quotation.toJSON(message.spread)
+        : undefined);
+    message.spreadType !== undefined &&
+      (obj.spreadType = trailingValueTypeToJSON(message.spreadType));
+    message.status !== undefined &&
+      (obj.status = trailingStopStatusToJSON(message.status));
+    message.price !== undefined &&
+      (obj.price = message.price ? Quotation.toJSON(message.price) : undefined);
+    message.extr !== undefined &&
+      (obj.extr = message.extr ? Quotation.toJSON(message.extr) : undefined);
+    return obj;
+  },
+};
+
+/** Сервис для работы со стоп-заявками: выставление, отмена, получение списка стоп-заявок. */
 export type StopOrdersServiceDefinition = typeof StopOrdersServiceDefinition;
 export const StopOrdersServiceDefinition = {
   name: "StopOrdersService",
   fullName: "tinkoff.public.invest.api.contract.v1.StopOrdersService",
   methods: {
-    /** Метод выставления стоп-заявки. */
+    /** Выставить стоп-заявку. */
     postStopOrder: {
       name: "PostStopOrder",
       requestType: PostStopOrderRequest,
@@ -876,7 +1595,7 @@ export const StopOrdersServiceDefinition = {
       responseStream: false,
       options: {},
     },
-    /** Метод получения списка активных стоп заявок по счёту. */
+    /** Получить список активных стоп-заявок по счёту. */
     getStopOrders: {
       name: "GetStopOrders",
       requestType: GetStopOrdersRequest,
@@ -885,7 +1604,7 @@ export const StopOrdersServiceDefinition = {
       responseStream: false,
       options: {},
     },
-    /** Метод отмены стоп-заявки. */
+    /** Отменить стоп-заявку. */
     cancelStopOrder: {
       name: "CancelStopOrder",
       requestType: CancelStopOrderRequest,
@@ -898,17 +1617,17 @@ export const StopOrdersServiceDefinition = {
 } as const;
 
 export interface StopOrdersServiceServiceImplementation<CallContextExt = {}> {
-  /** Метод выставления стоп-заявки. */
+  /** Выставить стоп-заявку. */
   postStopOrder(
     request: PostStopOrderRequest,
     context: CallContext & CallContextExt
   ): Promise<PostStopOrderResponse>;
-  /** Метод получения списка активных стоп заявок по счёту. */
+  /** Получить список активных стоп-заявок по счёту. */
   getStopOrders(
     request: GetStopOrdersRequest,
     context: CallContext & CallContextExt
   ): Promise<GetStopOrdersResponse>;
-  /** Метод отмены стоп-заявки. */
+  /** Отменить стоп-заявку. */
   cancelStopOrder(
     request: CancelStopOrderRequest,
     context: CallContext & CallContextExt
@@ -916,17 +1635,17 @@ export interface StopOrdersServiceServiceImplementation<CallContextExt = {}> {
 }
 
 export interface StopOrdersServiceClient<CallOptionsExt = {}> {
-  /** Метод выставления стоп-заявки. */
+  /** Выставить стоп-заявку. */
   postStopOrder(
     request: PostStopOrderRequest,
     options?: CallOptions & CallOptionsExt
   ): Promise<PostStopOrderResponse>;
-  /** Метод получения списка активных стоп заявок по счёту. */
+  /** Получить список активных стоп-заявок по счёту. */
   getStopOrders(
     request: GetStopOrdersRequest,
     options?: CallOptions & CallOptionsExt
   ): Promise<GetStopOrdersResponse>;
-  /** Метод отмены стоп-заявки. */
+  /** Отменить стоп-заявку. */
   cancelStopOrder(
     request: CancelStopOrderRequest,
     options?: CallOptions & CallOptionsExt
